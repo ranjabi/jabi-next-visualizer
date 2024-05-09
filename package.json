@@ -1,0 +1,23 @@
+{
+  "name": "jabi-next-visualizer",
+  "version": "1.0.0",
+  "description": "Visualizer for Next.js routes and components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type":"module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ranjabi/jabi-next-visualizer.git"
+  },
+  "author": "Fikri Ranjabi 13520002@std.stei.itb.ac.id",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ranjabi/jabi-next-visualizer/issues"
+  },
+  "homepage": "https://github.com/ranjabi/jabi-next-visualizer#readme",
+  "dependencies": {
+    "commander": "^12.0.0"
+  }
+}
