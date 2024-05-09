@@ -2,7 +2,8 @@
 Visualizer for Next.js routes and components
 
 To run package inside sample app:
-```ranjabi: sample-app main > node ../index.js listdir```
+Javascript: ```ranjabi: sample-app main > node ../index.js listdir```
+Typescript: ```ranjabi: sample-app main > npm run ts-node ../index.ts listdir```
 
 Plan:
 - bikin cli
