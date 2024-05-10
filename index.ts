@@ -48,7 +48,7 @@ export const listDir = () => {
   console.log('Starting to write the result to data.json')
 
   try {
-    fs.writeFileSync('/Users/ranjabi/Desktop/Coding/jabi-next-visualizer/data.json', JSON.stringify(dirRes));
+    fs.writeFileSync('/Users/ranjabi/Desktop/Coding/jabi-next-visualizer/app/public/data.json', JSON.stringify(dirRes));
   } catch (err) {
     console.error(err);
   }
