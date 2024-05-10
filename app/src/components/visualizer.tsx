@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ReactFlow, {
   Panel,
@@ -44,7 +46,7 @@ const useLayoutedElements = () => {
     }
 
     elk.layout(graph, globalOptions).then(({ children }) => {
-      children.forEach((node) => {
+      children?.forEach((node) => {
         node.position = { x: node.x, y: node.y };
       });
 
@@ -102,13 +104,13 @@ function Visualizer(props: VisualizeProps) {
   }, [initialState])
 
   const handleViewType = () => {
-    if (viewType === 'route') {
-      setViewType('component')
-      setInitialState(helper('component'))
-    } else if (viewType === 'component') {
-      setViewType('route')
-      setInitialState(helper('route'))
-    }
+    // if (viewType === 'route') {
+    //   setViewType('component')
+    //   setInitialState(helper('component'))
+    // } else if (viewType === 'component') {
+    //   setViewType('route')
+    //   setInitialState(helper('route'))
+    // }
   }
 
   return (

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { uuid } from "./helper";
 import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode } from "@/types";
 import {
@@ -5,8 +7,7 @@ import {
   type Edge as FlowEdge,
   ReactFlowProvider,
 } from 'reactflow';
-
-const { parse } = require("@babel/parser");
+import { parse } from "@babel/parser"
 const leafColor = '#ff0072'
 
 // convert file content into ast

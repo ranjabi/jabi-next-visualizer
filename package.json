@@ -4,6 +4,7 @@
   "description": "Visualizer for Next.js routes and components",
   "main": "index.js",
   "scripts": {
+    "app": "ts-node-dev server.ts",
     "ts-node": "ts-node",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,7 +19,10 @@
   },
   "homepage": "https://github.com/ranjabi/jabi-next-visualizer#readme",
   "dependencies": {
-    "commander": "^12.0.0"
+    "commander": "^12.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
