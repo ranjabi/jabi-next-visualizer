@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .registerContainer {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding: 16px;
+  }
+
+  .registerLabel {
+    font-weight: 900;
+  }
+
+  .registerInput {
+    border: 1px solid black;
+  }
+
+  .button {
+    border: 1px solid black;
+    width: 177px;
+  }
+
+  .text-updater-node {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background: white;
+  }
+}
