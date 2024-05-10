@@ -2,5 +2,7 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "esModuleInterop": true,
-  }
+    "outDir": "./cli-build/",
+  },
+  "include": ["cli/*.ts"],
 }

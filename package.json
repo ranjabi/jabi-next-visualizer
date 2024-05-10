@@ -4,7 +4,8 @@
   "description": "Visualizer for Next.js routes and components",
   "main": "index.js",
   "scripts": {
-    "app": "ts-node-dev server.ts",
+    "tsc": "tsc",
+    "app": "ts-node-dev cli/server.ts",
     "ts-node": "ts-node",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

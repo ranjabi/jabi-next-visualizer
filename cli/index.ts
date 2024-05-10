@@ -10,10 +10,6 @@ program
   .name('jabi-next-visualizer')
   .description('Visualizer for Next.js routes and components');
 
-export function currentDirFromPackage() {
-  console.log("currentDirFromPackage:", process.cwd());
-}
-
 export const listDir = () => {
   console.log('Starting to listdir')
   const getFileExtension = (filename) => filename.split('.').pop()
@@ -60,6 +56,12 @@ program.command('listdir')
   .description('List files in project\'s directories')
   .action(() => {
     listDir()
+  });
+
+program.command('curdir')
+  .description('Curent dir from project directory')
+  .action(() => {
+    console.log("Curent dir from project directory:", process.cwd());
   });
 
 program.parse();
