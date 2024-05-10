@@ -180,7 +180,7 @@ const convertToTree = (fileUploads: FileUpload[], viewType: string) => {
 
   fileUploads.forEach(item => {
     // slice(3) because we get rid of 'sample/src/pages/'
-    const pathParts = item.path.split('/').slice(3);
+    const pathParts = item.path.split('/').slice(2);
     let currentNode = root;
 
     pathParts.forEach((part, index) => {

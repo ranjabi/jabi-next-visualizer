@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from "path";
 import { Command } from 'commander';
 import { RawFile } from './types';
+import { config } from './config';
 
 const program = new Command();
 
@@ -11,9 +12,9 @@ program
   .description('Visualizer for Next.js routes and components');
 
 export const listDir = () => {
-  console.log('Starting to listdir')
+  console.log('Starting to parse routes and components')
   const getFileExtension = (filename) => filename.split('.').pop()
-  const allowedExtensions = new Set(['tsx', 'ts'])
+  const allowedExtensions = new Set(['tsx'])
 
   function rec_file(folderPath, prefix, res) {
     const dirs = fs.readdirSync(folderPath, { withFileTypes: true })
@@ -42,14 +43,16 @@ export const listDir = () => {
   rec_file(currentPath, '', dirRes)
 
   console.log('Starting to write the result to data.json')
+  console.log('Writing to:', config.rawFileOutputPath)
 
   try {
-    fs.writeFileSync('/Users/ranjabi/Desktop/Coding/jabi-next-visualizer/app/public/data.json', JSON.stringify(dirRes));
+    // fs.writeFileSync('/Users/ranjabi/Desktop/Coding/jabi-next-visualizer/app/.visualizer/data.json', JSON.stringify(dirRes));
+    fs.writeFileSync(config.rawFileOutputPath, JSON.stringify(dirRes));
   } catch (err) {
     console.error(err);
   }
 
-  console.log('Listdir finished')
+  console.log('Parse finished')
 }
 
 program.command('listdir')
@@ -62,6 +65,11 @@ program.command('curdir')
   .description('Curent dir from project directory')
   .action(() => {
     console.log("Curent dir from project directory:", process.cwd());
+  });
+
+program.command('config')
+  .action(() => {
+    console.log('Config:', config);
   });
 
 program.parse();

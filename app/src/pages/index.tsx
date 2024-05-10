@@ -23,10 +23,12 @@ export default function Home() {
 
   useEffect(() => {
     const getRawFile = async () => {
+      console.log('fetching start')
       const rawFileRes = await fetch('http://localhost:3010/raw-file')
       const rawFile = await rawFileRes.json()
 
       setInitialState(helper(viewType, rawFile))
+      console.log('fetching finished')
     }
 
     getRawFile()
