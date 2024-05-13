@@ -1,6 +1,6 @@
-import { IsLayoutedContext } from '@/context';
+import useStore from '@/store';
 import { RouteNodePayload } from '@/types';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Handle, Position } from 'reactflow';
  
 type RouteNodeProps = {
@@ -10,7 +10,7 @@ type RouteNodeProps = {
 export default function RouteNode(props: RouteNodeProps) {
   const [width, setWidth] = useState(150)
   const [height, setHeight] = useState(46)
-  const {isLayouted, setIsLayouted} = useContext(IsLayoutedContext)
+  const setIsLayouted = useStore(state => state.setIsLayouted)
   const handleClick = () => {
     setWidth(prev => prev * 2)
     setHeight(prev => prev * 2)

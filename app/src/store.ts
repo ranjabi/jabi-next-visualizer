@@ -21,6 +21,11 @@ export type RFState = {
   onConnect: OnConnect;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  isLayouted: boolean;
+  // setIsLayouted: (fn: (prev: boolean) => boolean) => void;
+  setIsLayouted: (isLayouted: boolean) => void;
+  viewType: string;
+  setViewType: (viewType: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -47,6 +52,17 @@ const useStore = create<RFState>((set, get) => ({
   setEdges: (edges: Edge[]) => {
     set({ edges });
   },
+  isLayouted: false,
+  setIsLayouted: (isLayouted: boolean) => {
+    set({ isLayouted});
+  },
+  // setIsLayouted: (fn: (prev: boolean) => boolean) => {
+  //   set((state => ({ isLayouted: fn(state.isLayouted) })));
+  // },
+  viewType: 'route',
+  setViewType: (viewType: string) => {
+    set({ viewType })
+  }
 }));
 
 export default useStore;

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ReactFlow, {
   Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
@@ -6,7 +6,6 @@ import ComponentsNode from "@/components/ComponentsNode";
 import RouteNode from "@/components/RouteNode";
 import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
-import { IsLayoutedContext, ViewTypeStateContext } from '@/context';
 import useStore, { RFState } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -64,7 +63,10 @@ const selector = (state: RFState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   setNodes: state.setNodes,
-  setEdges: state.setEdges
+  setEdges: state.setEdges,
+  isLayouted: state.isLayouted,
+  setIsLayouted: state.setIsLayouted,
+  viewType: state.viewType
 });
 
 type VisualizeProps = {
@@ -72,16 +74,12 @@ type VisualizeProps = {
 
 function Visualizer(props: VisualizeProps) {
   const elk = new ELK();
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType } = useStore(
     useShallow(selector),
   );
   const { fitView } = useReactFlow();
-  const { viewType, setViewType } = useContext(ViewTypeStateContext)
-  // const [nodes, setNodes, onNodesChange] = useNodesState(initialState.initialNodes);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialState.initialEdges);
   const { getLayoutedElements } = useLayoutedElements(elk);
   const [layouted, setLayouted] = useState(false);
-  const { isLayouted, setIsLayouted } = useContext(IsLayoutedContext)
 
   useEffect(() => {
     console.log('node changes in layout effect')

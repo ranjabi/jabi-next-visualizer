@@ -57,13 +57,7 @@ export default function Home() {
 
   return (
     <>
-      <ViewTypeStateContext.Provider value={{ viewType, setViewType }}>
-        <InitialStateContext.Provider value={{ initialState, setInitialState, helper }}>
-          <IsLayoutedContext.Provider value={{ isLayouted, setIsLayouted }}>
-            <VisualizerWrapper />
-          </IsLayoutedContext.Provider>
-        </InitialStateContext.Provider>
-      </ViewTypeStateContext.Provider>
+      <VisualizerWrapper />
       {/* <ul>
         {testFile.map((file) => {
           return (
