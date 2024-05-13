@@ -6,11 +6,11 @@ import {
   type Node as FlowNode,
   type Edge as FlowEdge
 } from 'reactflow';
-import VisualizerWrapper from "../components/visualizer";
+import VisualizerWrapper from "@/components/Visualizer";
 
 export default function Home() {
   function helper(viewType: string, testFile: RawFile[]) {
-    const initialState = setupInitialNodesEdges(testFile, viewType)
+    const initialState = setupInitialNodesEdges(testFile)
     return { initialNodes: initialState.initialNodes, initialEdges: initialState.initialEdges }
   }
 

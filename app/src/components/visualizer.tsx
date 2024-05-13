@@ -114,7 +114,7 @@ function Visualizer(props: VisualizeProps) {
   }
 
   return (
-    <div style={{ height: '90vh', width: '90vw' }}>
+    <div style={{ height: '100vh', width: '100vw' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

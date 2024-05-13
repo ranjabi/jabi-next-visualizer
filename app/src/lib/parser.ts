@@ -58,9 +58,9 @@ const parseNode = (oldNode, currentNode) => {
 /**
  * option: 1 = route only, 2 = route with component
  */
-export const setupInitialNodesEdges = (fileUpload: RawFile[], viewType: string) => {
+export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload)
-  const routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges, viewType)
+  const routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
   const initialNodes = generateRouteNodes(routeTree)
   const initialEdges = generateRouteEdges(routeTree)
 
@@ -158,7 +158,7 @@ function getParentDirectory(path: string) {
  * we want to create a route tree with every data filled with
  * component tree nodes and edges
  */
-const convertToTree = (fileUploads: FileUpload[], viewType: string) => {
+const convertToTree = (fileUploads: FileUpload[]) => {
   // const beginPath = 'sample/src/pages/'
   const beginPath = getParentDirectory(fileUploads[0].path)
   const rootId = uuid().slice(0, 6) + '-root'
@@ -258,7 +258,7 @@ function generateRouteNodes(routeNode: RouteNode) {
         }
       },
       position: { x: 0, y: 0 },
-      type: node.data.initialNodes.length === 0 ? 'route' : 'component',
+      type: node.data.initialNodes.length === 0 ? 'route' : 'route',
     };
 
     nodes.push(newNode);
