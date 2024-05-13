@@ -2,37 +2,44 @@ import useStore from '@/store';
 import { RouteNodePayload } from '@/types';
 import { useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import CustomNodeWrapper from './ComponentNode';
+import RouteNode from './RouteNode';
 
 type CustomNodeProps = {
   data: RouteNodePayload
 }
 
-export default function RouteNode(props: CustomNodeProps) {
+export default function CustomNode(props: CustomNodeProps) {
   const setNodeViewToComponents = useStore(state => state.setNodeViewToShowComponents)
-  const [width, setWidth] = useState(150)
-  const [height, setHeight] = useState(46)
+  const [bounds, setBounds] = useState({
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 50
+  })
   const setIsLayouted = useStore(state => state.setIsLayouted)
   const handleClick = () => {
-    // setWidth(prev => prev * 2)
-    // setHeight(prev => prev * 2)
-    // setIsLayouted(false)
+    // setBounds(prev => {
+    //   return {
+    //   ...prev,
+    //   width: prev.width * 1.5,
+    //   height: prev.height * 1.5
+    // }
+    // })
+    setIsLayouted(false)
     setNodeViewToComponents(props.data.id)
     console.log('clicked id:', props.data.id)
   }
 
+  const RouteView = (
+    <RouteNode bounds={bounds} setBounds={setBounds} data={props.data} handleClick={handleClick} />
+  )
+
+  const ComponentView = (
+    <CustomNodeWrapper data={props.data} bounds={bounds} setBounds={setBounds} />
+  )
+
   return (
-    <div style={{
-      border: '1px solid #1a192b',
-      padding: '10px',
-      borderRadius: '3px',
-      background: props.data.style.bgColor,
-      width: width,
-      height: height,
-      textAlign: 'center'
-    }} onClick={handleClick}>
-      <Handle type="target" position={Position.Top} />
-      <p>{props.data.label} {props.data.isShowComponents === true ? 'true' : 'false'}</p>
-      <Handle type="source" position={Position.Bottom} />
-    </div>
+    props.data.isShowComponents ? ComponentView : RouteView
   );
 }

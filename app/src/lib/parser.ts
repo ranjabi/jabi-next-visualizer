@@ -62,9 +62,6 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const initialNodes = generateRouteNodes(routeTree)
   const initialEdges = generateRouteEdges(routeTree)
 
-  console.log('setupInitialNodesEdges')
-  // console.log('node:', initialNodes)
-  // console.log('edge:', initialEdges)
   return { initialNodes, initialEdges }
 }
 
@@ -90,7 +87,6 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
 
 // convert to react flow node format
 function generateComponentNodes(ast: Ast) {
-  // console.log('raw:', raw)
   let nodes = [] as Node[];
 
   function traverse(node: Ast) {
@@ -224,7 +220,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: isLeaf(part) ? leafColor : 'white'
               },
-              isShowComponents: false
+              isShowComponents: lookupNode ? false : false
             },
             children: []
           };

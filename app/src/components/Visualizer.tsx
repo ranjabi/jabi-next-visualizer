@@ -1,20 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactFlow, {
   Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
-import ComponentsNode from "@/components/ComponentsNode";
+import ComponentNode from "@/components/ComponentNode";
 import CustomNode from "@/components/CustomNode";
-import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
+import ELK from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
 import useStore, { RFState } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
-const nodeTypes = { custom: CustomNode, component: ComponentsNode };
-
-
-
-const useLayoutedElements = (elk: ELKType) => {
-  // console.log('elk run')
+const nodeTypes = { custom: CustomNode, component: ComponentNode };
+const elk = new ELK();
+const useLayoutedElements = () => {
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
   const defaultOptions = {
     'elk.algorithm': 'layered',
@@ -25,8 +22,7 @@ const useLayoutedElements = (elk: ELKType) => {
     'elk.direction': 'DOWN'
   };
 
-  const getLayoutedElements = useCallback(() => {
-
+  const getLayoutedElements = () => {
     const layoutOptions = { ...defaultOptions };
     const graph = {
       id: 'root',
@@ -47,11 +43,11 @@ const useLayoutedElements = (elk: ELKType) => {
       });
 
       setNodes(children);
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
     });
-  }, []);
+    // window.requestAnimationFrame(() => {
+    //   fitView();
+    // });
+  }
 
   return { getLayoutedElements };
 };
@@ -73,19 +69,16 @@ type VisualizeProps = {
 }
 
 function Visualizer(props: VisualizeProps) {
-  const elk = new ELK();
   const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType } = useStore(
     useShallow(selector),
   );
+  
   const { fitView } = useReactFlow();
-  const { getLayoutedElements } = useLayoutedElements(elk);
+  const { getLayoutedElements } = useLayoutedElements();
   const [layouted, setLayouted] = useState(false);
 
   useEffect(() => {
-    console.log('node changes in layout effect')
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
-      // console.log('node:', nodes)
-      // console.log('edge:', edges)
       getLayoutedElements()
       // nodes.forEach(n => {
       //   console.log('id:', n.id)
@@ -94,10 +87,8 @@ function Visualizer(props: VisualizeProps) {
       // })
       // console.log('------------')
 
-      if (nodes.every(n => n.width && n.width !== 2 && n.height && n.height !== 2)) {
+      if (nodes.every(n => n.width && n.height && n.width > 2 && n.height > 2)) {
         setIsLayouted(true)
-        console.log('layouted')
-
       }
       // window.requestAnimationFrame(() => {
       //   fitView();
@@ -106,22 +97,10 @@ function Visualizer(props: VisualizeProps) {
 
   }, [nodes, edges])
 
-  // WORKED
   // useEffect(() => {
-  //   setNodes(initialState.initialNodes)
-  //   setEdges(initialState.initialEdges)
-  //   setLayouted(false)
-  // }, [initialState])
-
-  const handleViewType = () => {
-    // if (viewType === 'route') {
-    //   setViewType('component')
-    //   setInitialState(helper('component'))
-    // } else if (viewType === 'component') {
-    //   setViewType('route')
-    //   setInitialState(helper('route'))
-    // }
-  }
+  //   console.log('is layouted CHANGED')
+  //   getLayoutedElements()
+  // }, [isLayouted])
 
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
@@ -132,15 +111,15 @@ function Visualizer(props: VisualizeProps) {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         // fitView
+        minZoom={0.001}
         style={{
           background: '#008080'
         }}
       >
         <Panel position="top-right">
-          <button className='border border-solid border-black mx-1' onClick={handleViewType}>view type: {viewType}</button>
+          <button className='border border-solid border-black mx-1' >view type: {viewType}</button>
           <button className='border border-solid border-black mx-1' onClick={() => {
             getLayoutedElements()
-            console.log('elk run onclick')
           }
           }>vertical layout</button>
         </Panel>

@@ -8,19 +8,15 @@ const rfStyle = {
   backgroundColor: '#B8CEFF',
 };
 
-type CustomNodeProps = {
+type ComponentNodeProps = {
   id: string
   bounds: Rect
-  setBounds: React.Dispatch<React.SetStateAction<Rect>>
-  initialNodes: FlowNode[],
+  setBounds: (bounds: Rect) => void
+  initialNodes: FlowNode[]
   initialEdges: FlowEdge[]
 }
 
-const CustomNode = (props: CustomNodeProps) => {
-  // if (props.id.includes('_document')) {
-  //   console.log('node id:', props.id)
-  //   console.log('custom node bounds:', props.bounds)
-  // }
+const ComponentNode = (props: ComponentNodeProps) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
   const getLayoutedElements = (nodes: FlowNode[], edges: FlowEdge[], options: { direction: string }) => {
@@ -52,20 +48,6 @@ const CustomNode = (props: CustomNodeProps) => {
     if (bounds.width !== 0 && bounds.height !== 0 && layouted) {
       props.setBounds(bounds)
     }
-    // console.log('run on id:', props.id, bounds.width)
-    // console.log('parentsize:', parentSize)
-    // const newParentSize = parentSize.map(item => {
-    //   if (item.id === props.id) {
-    //     console.log('updating ', item.id, ' from ', item.width, ' to ', bounds.width)
-    //     return {
-    //       id: item.id,
-    //       width: bounds.width,
-    //       height: bounds.height
-    //     }
-    //   } else {
-    //     return item
-    //   }
-    // })
   }, [nodes])
 
   const onLayout = useCallback(
@@ -123,21 +105,17 @@ const CustomNode = (props: CustomNodeProps) => {
 
 type CustomNodeWrapperProps = {
   data: RouteNodePayload
+  bounds: Rect 
+  setBounds: React.Dispatch<React.SetStateAction<Rect>>
 }
 
 function CustomNodeWrapper(props: CustomNodeWrapperProps) {
-  const [bounds, setBounds] = useState({
-    x: 0,
-    y: 0,
-    width: 1,
-    height: 1
-  })
 
   return (
-    <div className="text-updater-node" style={{ height: bounds.height + (2 * bounds.y), width: bounds.width + (2 * bounds.x) }}>
+    <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }}>
       <Handle type="target" position={Position.Top} id="target" />
       <div>
-        <CustomNode id={props.data.id} bounds={bounds} setBounds={setBounds} initialNodes={props.data.initialNodes} initialEdges={props.data.initialEdges} />
+        <ComponentNode id={props.data.id} bounds={props.bounds} setBounds={props.setBounds} initialNodes={props.data.initialNodes} initialEdges={props.data.initialEdges} />
       </div>
       <Handle type="source" position={Position.Bottom} id="source" />
     </div>

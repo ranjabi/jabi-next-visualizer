@@ -55,7 +55,7 @@ const useStore = create<RFState>((set, get) => ({
   },
   isLayouted: false,
   setIsLayouted: (isLayouted: boolean) => {
-    set({ isLayouted});
+    set({ isLayouted });
   },
   // setIsLayouted: (fn: (prev: boolean) => boolean) => {
   //   set((state => ({ isLayouted: fn(state.isLayouted) })));
@@ -68,9 +68,17 @@ const useStore = create<RFState>((set, get) => ({
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
-          return { ...node, data: { ...node.data, isShowComponents: true } };
+          return {
+            ...node,
+            width: 2,
+            height: 2,
+            data: {
+              ...node.data, 
+              isShowComponents: true,
+            }
+          };
         }
-   
+
         return node;
       }),
     });
