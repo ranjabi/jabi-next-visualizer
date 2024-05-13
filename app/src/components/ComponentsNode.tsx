@@ -123,7 +123,6 @@ const CustomNode = (props: CustomNodeProps) => {
 
 type CustomNodeWrapperProps = {
   data: RouteNodePayload
-  isConnectable: boolean
 }
 
 function CustomNodeWrapper(props: CustomNodeWrapperProps) {
@@ -136,11 +135,11 @@ function CustomNodeWrapper(props: CustomNodeWrapperProps) {
 
   return (
     <div className="text-updater-node" style={{ height: bounds.height + (2 * bounds.y), width: bounds.width + (2 * bounds.x) }}>
-      <Handle type="target" position={Position.Top} isConnectable={props.isConnectable} id="target" />
+      <Handle type="target" position={Position.Top} id="target" />
       <div>
         <CustomNode id={props.data.id} bounds={bounds} setBounds={setBounds} initialNodes={props.data.initialNodes} initialEdges={props.data.initialEdges} />
       </div>
-      <Handle type="source" position={Position.Bottom} isConnectable={props.isConnectable} id="source" />
+      <Handle type="source" position={Position.Bottom} id="source" />
     </div>
   );
 }
