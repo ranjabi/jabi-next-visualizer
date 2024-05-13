@@ -12,11 +12,12 @@ import { useShallow } from "zustand/react/shallow";
 
 const selector = (state: RFState) => ({
   setNodes: state.setNodes,
-  setEdges: state.setEdges
+  setEdges: state.setEdges,
+  setRawFile: state.setRawFile
 });
 
 export default function Home() {
-  const { setNodes, setEdges } = useStore(
+  const { setNodes, setEdges, setRawFile } = useStore(
     useShallow(selector),
   );
 
@@ -43,6 +44,7 @@ export default function Home() {
       const initialState = setupInitialNodesEdges(rawFile)
 
       if (!ignore) {
+        setRawFile(rawFile)
         setNodes(initialState.initialNodes)
         setEdges(initialState.initialEdges)
       }

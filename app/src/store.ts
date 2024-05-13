@@ -11,10 +11,12 @@ import {
   OnConnect,
   applyNodeChanges,
   applyEdgeChanges,
+  Rect,
 } from 'reactflow';
+import { RouteNodePayload } from './types';
 
 export type RFState = {
-  nodes: Node[];
+  nodes: Node<RouteNodePayload>[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
@@ -27,6 +29,14 @@ export type RFState = {
   viewType: string;
   setViewType: (viewType: string) => void;
   setNodeViewToShowComponents: (nodeId: string) => void;
+  setNodeViewToShowRoute: (nodeId: string) => void;
+  selectedNode: Node<RouteNodePayload> | undefined
+  setSelectedNode: (nodeId: string) => void
+  setComponentsViewBounds: (nodeId: string, bounds: Rect) => void
+  rawFile: any
+  setRawFile: (rawFile: any) => void
+  setAllRoute: () => void
+  setAllComponents: () => void
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -68,20 +78,112 @@ const useStore = create<RFState>((set, get) => ({
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
+          node.data = {
+            ...node.data,
+            isShowComponents: true,
+          }
+
+          node.position.x = 0
+          node.position.y = 0
+
           return {
             ...node,
             width: 2,
             height: 2,
-            data: {
-              ...node.data, 
-              isShowComponents: true,
-            }
+          };
+        }
+
+        // node.width = 2
+        // node.height = 2
+        node.position.x = 0
+        node.position.y = 0
+
+        return node;
+      }),
+    });
+  },
+  setNodeViewToShowRoute: (nodeId: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = {
+            ...node.data,
+            isShowComponents: false,
+          }
+
+          node.position.x = 0
+          node.position.y = 0
+
+          return {
+            ...node,
+            width: 150,
+            height: 40,
+
+          };
+        }
+
+        node.position.x = 0
+        node.position.y = 0
+
+        return node;
+      }),
+    });
+  },
+  selectedNode: undefined,
+  setSelectedNode: (nodeId: string) => {
+    set({ selectedNode: get().nodes.find(n => n.id === nodeId) })
+  },
+  setComponentsViewBounds: (nodeId: string, bounds: Rect) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = {
+            ...node.data,
+            componentsViewBounds: bounds
+          }
+
+          return {
+            ...node,
+            // width: bounds.width,
+            // height: bounds.height,
           };
         }
 
         return node;
       }),
     });
+  },
+  rawFile: [],
+  setRawFile: (rawFile) => {
+    set({ rawFile })
+  },
+  setAllRoute: () => {
+    set({
+      nodes: get().nodes.map(node => {
+        node.data = {
+          ...node.data,
+          isShowComponents: false
+        }
+
+        return { ...node }
+      })
+    })
+  },
+  setAllComponents: () => {
+    set({
+      nodes: get().nodes.map(node => {
+        node.data = {
+          ...node.data,
+          isShowComponents: true
+        }
+
+        // node.position.x = 0
+        // node.position.y = 0
+
+        return { ...node }
+        // return node
+      })
+    })
   }
 }));
 

@@ -1,6 +1,7 @@
 import {
   type Node as FlowNode,
   type Edge as FlowEdge,
+  Rect,
 } from 'reactflow';
 
 export type Ast = {
@@ -60,4 +61,5 @@ export type RouteNodePayload = {
     color: string
   }
   isShowComponents: boolean
+  componentsViewBounds: Rect | undefined
 }

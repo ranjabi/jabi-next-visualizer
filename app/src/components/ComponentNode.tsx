@@ -3,6 +3,7 @@ import ReactFlow, { Handle, Panel, Position, ReactFlowProvider, getNodesBounds, 
 import Dagre from '@dagrejs/dagre';
 import 'reactflow/dist/style.css';
 import { RouteNodePayload } from '@/types';
+import useStore from '@/store';
 
 const rfStyle = {
   backgroundColor: '#B8CEFF',
@@ -43,11 +44,16 @@ const ComponentNode = (props: ComponentNodeProps) => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(props.initialEdges);
   const [layouted, setLayouted] = useState(false);
   const bounds = getNodesBounds(nodes);
+  const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
 
   useEffect(() => {
     if (bounds.width !== 0 && bounds.height !== 0 && layouted) {
       props.setBounds(bounds)
+      console.log('SET BOUNDSSSSSSSS', bounds)
+      // console.log('s et view bounds for:', props.id, 'bounds:', bounds)
+      setComponentsViewBounds(props.id, bounds)
     }
+
   }, [nodes])
 
   const onLayout = useCallback(

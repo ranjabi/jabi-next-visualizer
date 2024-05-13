@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ReactFlow, {
   Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
 import ComponentNode from "@/components/ComponentNode";
 import CustomNode from "@/components/CustomNode";
-import ELK from 'elkjs/lib/elk.bundled.js';
+import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
 import useStore, { RFState } from '../store';
 import { useShallow } from 'zustand/react/shallow';
+import Sidebar from './Sidebar';
 
-const nodeTypes = { custom: CustomNode, component: ComponentNode };
+
 const elk = new ELK();
 const useLayoutedElements = () => {
+  
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
   const defaultOptions = {
     'elk.algorithm': 'layered',
@@ -23,11 +25,26 @@ const useLayoutedElements = () => {
   };
 
   const getLayoutedElements = () => {
+    
     const layoutOptions = { ...defaultOptions };
     const graph = {
       id: 'root',
       layoutOptions: layoutOptions,
-      children: getNodes(),
+      children: getNodes().map(n => {
+        // if (n.data.componentsViewBounds) {
+        //   const width = n.data.componentsViewBounds.width
+        //   const height = n.data.componentsViewBounds.height
+        //   return {...n, width: width, height: height}
+        // }
+
+        return {...n}
+
+        }
+        // if (n.id.includes('kambing')) {
+        //   console.log('bounds:', n.data.componentsViewBounds)
+        // }
+        // return n
+      ),
       edges: getEdges(),
     };
 
@@ -43,10 +60,10 @@ const useLayoutedElements = () => {
       });
 
       setNodes(children);
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
     });
-    // window.requestAnimationFrame(() => {
-    //   fitView();
-    // });
   }
 
   return { getLayoutedElements };
@@ -69,33 +86,37 @@ type VisualizeProps = {
 }
 
 function Visualizer(props: VisualizeProps) {
+  const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
   const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType } = useStore(
     useShallow(selector),
   );
-  
+
   const { fitView } = useReactFlow();
   const { getLayoutedElements } = useLayoutedElements();
   const [layouted, setLayouted] = useState(false);
 
   useEffect(() => {
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
+      console.log('layouted effect jalan')
       getLayoutedElements()
-      // nodes.forEach(n => {
-      //   console.log('id:', n.id)
-      //   console.log('w:', n.width)
-      //   console.log('h:', n.height)
-      // })
-      // console.log('------------')
 
-      if (nodes.every(n => n.width && n.height && n.width > 2 && n.height > 2)) {
+      if (nodes.every(n => n.width && n.width > 2 && n.height && n.height > 2 && n.position.x !== 0 && n.position.y !== 0)) {
         setIsLayouted(true)
+        console.log('layouted')
       }
-      // window.requestAnimationFrame(() => {
-      //   fitView();
-      // });
     }
 
   }, [nodes, edges])
+
+  useEffect(() => {
+    nodes.forEach(n => {
+      // console.log('x:', n.position.x, 'y:', n.position.y, 'w:', n.width, 'h:', n.height)
+      if (n.id.includes('kambing')) {
+        console.log(n)
+      }
+    })
+    console.log('------------')
+  }, [nodes])
 
   // useEffect(() => {
   //   console.log('is layouted CHANGED')
@@ -103,7 +124,8 @@ function Visualizer(props: VisualizeProps) {
   // }, [isLayouted])
 
   return (
-    <div style={{ height: '100vh', width: '100vw' }}>
+    <div className='h-[100vh] w-[calc(100vw - 300px] flex'>
+      <Sidebar />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -120,6 +142,12 @@ function Visualizer(props: VisualizeProps) {
           <button className='border border-solid border-black mx-1' >view type: {viewType}</button>
           <button className='border border-solid border-black mx-1' onClick={() => {
             getLayoutedElements()
+            // nodes.forEach(n => {
+            //   if (n.id.includes('kambing')) {
+            //     console.log(n)
+            //   }
+            // })
+            // console.log('------------')
           }
           }>vertical layout</button>
         </Panel>

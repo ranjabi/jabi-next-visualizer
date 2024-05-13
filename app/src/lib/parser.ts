@@ -175,7 +175,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
       style: {
         color: 'black',
         bgColor: 'white'
-      }
+      },
+      componentsViewBounds: undefined
     }
   }  as RouteNode;
 
@@ -220,7 +221,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: isLeaf(part) ? leafColor : 'white'
               },
-              isShowComponents: lookupNode ? false : false
+              isShowComponents: false,
+              componentsViewBounds: undefined
             },
             children: []
           };
