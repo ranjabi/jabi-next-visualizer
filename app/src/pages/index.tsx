@@ -6,7 +6,7 @@ import {
   type Node as FlowNode,
   type Edge as FlowEdge
 } from 'reactflow';
-import VisualizerWrapper from "@/components/visualizerTemp";
+import VisualizerWrapper from "@/components/Visualizer";
 import useStore, { RFState } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 
