@@ -7,10 +7,22 @@ import {
   type Edge as FlowEdge
 } from 'reactflow';
 import VisualizerWrapper from "@/components/Visualizer";
+import useStore, { RFState } from "../../store";
+import { useShallow } from "zustand/react/shallow";
+
+const selector = (state: RFState) => ({
+  setNodes: state.setNodes,
+  setEdges: state.setEdges
+});
 
 export default function Home() {
-  function helper(viewType: string, testFile: RawFile[]) {
+  const { setNodes, setEdges } = useStore(
+    useShallow(selector),
+  );
+
+  function helper(testFile: RawFile[]) {
     const initialState = setupInitialNodesEdges(testFile)
+    console.log('initialstate:', initialState)
     return { initialNodes: initialState.initialNodes, initialEdges: initialState.initialEdges }
   }
 
@@ -22,16 +34,25 @@ export default function Home() {
   const [isLayouted, setIsLayouted] = useState(false)
 
   useEffect(() => {
+    let ignore = false;
+
     const getRawFile = async () => {
-      console.log('fetching start')
       const rawFileRes = await fetch('http://localhost:3010/raw-file')
       const rawFile = await rawFileRes.json()
 
-      setInitialState(helper(viewType, rawFile))
-      console.log('fetching finished')
+      const initialState = setupInitialNodesEdges(rawFile)
+
+      if (!ignore) {
+        setNodes(initialState.initialNodes)
+        setEdges(initialState.initialEdges)
+      }
     }
 
     getRawFile()
+
+    return () => {
+      ignore = true;
+    };
   }, [])
 
   return (

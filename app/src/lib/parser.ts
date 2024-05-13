@@ -64,6 +64,9 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const initialNodes = generateRouteNodes(routeTree)
   const initialEdges = generateRouteEdges(routeTree)
 
+  console.log('setupInitialNodesEdges')
+  // console.log('node:', initialNodes)
+  // console.log('edge:', initialEdges)
   return { initialNodes, initialEdges }
 }
 

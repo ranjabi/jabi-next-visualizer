@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ReactFlow, {
   Panel,
@@ -9,15 +7,17 @@ import ReactFlow, {
 } from 'reactflow';
 import ComponentsNode from "@/components/ComponentsNode";
 import RouteNode from "@/components/RouteNode";
-import ELK from 'elkjs/lib/elk.bundled.js';
+import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
 import { InitialStateContext, IsLayoutedContext, ViewTypeStateContext } from '@/context';
+import useStore, { RFState } from '../../store';
+import { useShallow } from 'zustand/react/shallow';
 
 const nodeTypes = { route: RouteNode, component: ComponentsNode };
 
-const elk = new ELK();
 
-const useLayoutedElements = () => {
+
+const useLayoutedElements = (elk: ELKType) => {
   // console.log('elk run')
   const { getNodes, setNodes, getEdges, fitView } = useReactFlow();
   const defaultOptions = {
@@ -60,22 +60,37 @@ const useLayoutedElements = () => {
   return { getLayoutedElements };
 };
 
+const selector = (state: RFState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes,
+  setEdges: state.setEdges
+});
+
 type VisualizeProps = {
 }
 
 function Visualizer(props: VisualizeProps) {
+  const elk = new ELK();
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useStore(
+    useShallow(selector),
+  );
   const { fitView } = useReactFlow();
   const { viewType, setViewType } = useContext(ViewTypeStateContext)
-  const { initialState, setInitialState, helper } = useContext(InitialStateContext)
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialState.initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialState.initialEdges);
-  const { getLayoutedElements } = useLayoutedElements();
+  // const [nodes, setNodes, onNodesChange] = useNodesState(initialState.initialNodes);
+  // const [edges, setEdges, onEdgesChange] = useEdgesState(initialState.initialEdges);
+  const { getLayoutedElements } = useLayoutedElements(elk);
   const [layouted, setLayouted] = useState(false);
-  const {isLayouted, setIsLayouted} = useContext(IsLayoutedContext)
+  const { isLayouted, setIsLayouted } = useContext(IsLayoutedContext)
 
   useEffect(() => {
     console.log('node changes in layout effect')
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
+      // console.log('node:', nodes)
+      // console.log('edge:', edges)
       getLayoutedElements()
       // nodes.forEach(n => {
       //   console.log('id:', n.id)
@@ -87,7 +102,7 @@ function Visualizer(props: VisualizeProps) {
       if (nodes.every(n => n.width && n.width !== 2 && n.height && n.height !== 2)) {
         setIsLayouted(true)
         console.log('layouted')
-        
+
       }
       // window.requestAnimationFrame(() => {
       //   fitView();
@@ -97,11 +112,11 @@ function Visualizer(props: VisualizeProps) {
   }, [nodes, edges])
 
   // WORKED
-  useEffect(() => {
-    setNodes(initialState.initialNodes)
-    setEdges(initialState.initialEdges)
-    setLayouted(false)
-  }, [initialState])
+  // useEffect(() => {
+  //   setNodes(initialState.initialNodes)
+  //   setEdges(initialState.initialEdges)
+  //   setLayouted(false)
+  // }, [initialState])
 
   const handleViewType = () => {
     // if (viewType === 'route') {
