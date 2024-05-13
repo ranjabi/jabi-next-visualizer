@@ -55,9 +55,9 @@ export type RouteNodePayload = {
   label: string
   initialNodes: FlowNode[]
   initialEdges: FlowEdge[]
-  bgColor: string
   style: {
-    backgroundColor: string
+    bgColor: string
     color: string
   }
+  isShowComponents: boolean
 }

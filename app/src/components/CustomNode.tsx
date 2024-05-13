@@ -3,11 +3,11 @@ import { RouteNodePayload } from '@/types';
 import { useState } from 'react';
 import { Handle, Position } from 'reactflow';
  
-type RouteNodeProps = {
+type CustomNodeProps = {
   data: RouteNodePayload
 }
  
-export default function RouteNode(props: RouteNodeProps) {
+export default function RouteNode(props: CustomNodeProps) {
   const [width, setWidth] = useState(150)
   const [height, setHeight] = useState(46)
   const setIsLayouted = useStore(state => state.setIsLayouted)
@@ -23,7 +23,7 @@ export default function RouteNode(props: RouteNodeProps) {
       border: '1px solid #1a192b',
       padding: '10px',
       borderRadius: '3px',
-      background: props.data.style.backgroundColor,
+      background: props.data.style.bgColor,
       width: width,
       height: height,
       textAlign: 'center'

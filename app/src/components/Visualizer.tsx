@@ -3,13 +3,13 @@ import ReactFlow, {
   Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
 import ComponentsNode from "@/components/ComponentsNode";
-import RouteNode from "@/components/RouteNode";
+import CustomNode from "@/components/CustomNode";
 import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
 import useStore, { RFState } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
-const nodeTypes = { route: RouteNode, component: ComponentsNode };
+const nodeTypes = { custom: CustomNode, component: ComponentsNode };
 
 
 

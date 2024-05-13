@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { uuid } from "./helper";
 import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode } from "@/types";
 import {
@@ -177,7 +175,11 @@ const convertToTree = (fileUploads: FileUpload[]) => {
       label: "/",
       initialNodes: [],
       initialEdges: [],
-      bgColor: 'white'
+      isShowComponents: false,
+      style: {
+        color: 'black',
+        bgColor: 'white'
+      }
     }
   }  as RouteNode;
 
@@ -218,7 +220,11 @@ const convertToTree = (fileUploads: FileUpload[]) => {
               initialNodes: lookupNode ? lookupNode.nodes : [],
               initialEdges: lookupNode ? lookupNode.edges : [],
               label: getLabel(part, currentNode.data.label),
-              bgColor: isLeaf(part) ? leafColor : 'white'
+              style: {
+                color: 'black',
+                bgColor: isLeaf(part) ? leafColor : 'white'
+              },
+              isShowComponents: false
             },
             children: []
           };
@@ -256,12 +262,12 @@ function generateRouteNodes(routeNode: RouteNode) {
       id: node.id || node.name,
       data: {...node.data,
         style: {
-          backgroundColor: node.data.bgColor,
-          color: node.data.bgColor === leafColor ? 'white' : 'black'
+          bgColor: node.data.style.bgColor,
+          color: node.data.style.bgColor === leafColor ? 'white' : 'black'
         }
       },
       position: { x: 0, y: 0 },
-      type: node.data.initialNodes.length === 0 ? 'route' : 'route',
+      type: node.data.initialNodes.length === 0 ? 'custom' : 'custom',
     };
 
     nodes.push(newNode);
