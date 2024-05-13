@@ -26,6 +26,7 @@ export type RFState = {
   setIsLayouted: (isLayouted: boolean) => void;
   viewType: string;
   setViewType: (viewType: string) => void;
+  setNodeViewToShowComponents: (nodeId: string) => void;
 };
 
 const useStore = create<RFState>((set, get) => ({
@@ -62,6 +63,17 @@ const useStore = create<RFState>((set, get) => ({
   viewType: 'route',
   setViewType: (viewType: string) => {
     set({ viewType })
+  },
+  setNodeViewToShowComponents: (nodeId: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          return { ...node, data: { ...node.data, isShowComponents: true } };
+        }
+   
+        return node;
+      }),
+    });
   }
 }));
 
