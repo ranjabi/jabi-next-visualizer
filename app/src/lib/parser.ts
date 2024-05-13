@@ -188,9 +188,8 @@ const convertToTree = (fileUploads: FileUpload[], viewType: string) => {
         let foundChild = currentNode.children.find(child => child.name === part);
         if (!foundChild) {
           const id = `${uuid().slice(0, 6)}-${part}`
-
           // to add components
-          const lookupNode = fileUploads.find(e => e.path === beginPath + pathParts.slice(0, index + 1).join('/'))
+          const lookupNode = fileUploads.find(e => e.path === beginPath + '/' + pathParts.slice(0, index + 1).join('/'))
 
           const getLabel = (part: string, parent: string) => {
             if (parent === '/') {
@@ -213,8 +212,8 @@ const convertToTree = (fileUploads: FileUpload[], viewType: string) => {
             data: {
               id: id,
               // Append component nodes and edges
-              initialNodes: lookupNode && viewType === 'component' ? lookupNode.nodes : [],
-              initialEdges: lookupNode && viewType === 'component' ? lookupNode.edges : [],
+              initialNodes: lookupNode ? lookupNode.nodes : [],
+              initialEdges: lookupNode ? lookupNode.edges : [],
               label: getLabel(part, currentNode.data.label),
               bgColor: isLeaf(part) ? leafColor : 'white'
             },
