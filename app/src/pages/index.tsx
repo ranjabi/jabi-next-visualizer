@@ -7,7 +7,7 @@ import {
   type Edge as FlowEdge
 } from 'reactflow';
 import VisualizerWrapper from "@/components/Visualizer";
-import useStore, { RFState } from "../../store";
+import useStore, { RFState } from "../store";
 import { useShallow } from "zustand/react/shallow";
 
 const selector = (state: RFState) => ({

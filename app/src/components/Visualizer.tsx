@@ -1,16 +1,13 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ReactFlow, {
-  Panel,
-  useNodesState,
-  useEdgesState,
-  useReactFlow, ReactFlowProvider
+  Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
 import ComponentsNode from "@/components/ComponentsNode";
 import RouteNode from "@/components/RouteNode";
 import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
-import { InitialStateContext, IsLayoutedContext, ViewTypeStateContext } from '@/context';
-import useStore, { RFState } from '../../store';
+import { IsLayoutedContext, ViewTypeStateContext } from '@/context';
+import useStore, { RFState } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
 const nodeTypes = { route: RouteNode, component: ComponentsNode };
