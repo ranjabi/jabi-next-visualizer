@@ -51,7 +51,7 @@ export default function CustomNode(props: CustomNodeProps) {
   )
 
   const ComponentView = (
-    <CustomNodeWrapper data={props.data} bounds={bounds} setBounds={setBounds} />
+    <CustomNodeWrapper data={props.data} bounds={bounds} setBounds={setBounds} handleClick={handleClick} />
   )
 
   return (

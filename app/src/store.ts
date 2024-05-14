@@ -36,6 +36,8 @@ export type RFState = {
   setRawFile: (rawFile: any) => void
   setAllRoute: () => void
   setAllComponents: () => void
+  focusId: string | undefined | null
+  setFocusId: (nodeId: string | null) => void
 };
 
 export const selector = (state: RFState) => ({
@@ -54,7 +56,9 @@ export const selector = (state: RFState) => ({
   setNodeViewToRoute: state.setNodeViewToRoute,
   setSelectedNode: state.setSelectedNode,
   setAllRoute: state.setAllRoute,
-  setAllComponents: state.setAllComponents
+  setAllComponents: state.setAllComponents,
+  focusId: state.focusId,
+  setFocusId: state.setFocusId
 });
 
 const useStore = create<RFState>((set, get) => ({
@@ -210,6 +214,10 @@ const useStore = create<RFState>((set, get) => ({
         // return node
       })
     })
+  },
+  focusId: undefined,
+  setFocusId: (nodeId: string | null) => {
+    set({ focusId: nodeId })
   }
 }));
 

@@ -111,11 +111,12 @@ type CustomNodeWrapperProps = {
   data: NodePayload
   bounds: Rect
   setBounds: React.Dispatch<React.SetStateAction<Rect>>
+  handleClick: () => void
 }
 
 function CustomNodeWrapper(props: CustomNodeWrapperProps) {
   return (
-    <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }}>
+    <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} onClick={props.handleClick}>
       <Handle type="target" position={Position.Top} id="target" />
       <ComponentNode {...props} />
       <Handle type="source" position={Position.Bottom} id="source" />

@@ -27,7 +27,7 @@ type VisualizeProps = {
 function Visualizer(props: VisualizeProps) {
   const elk = new ELK();
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType } = useStore(
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType, focusId, setFocusId } = useStore(
     useShallow(selector),
   );
   const { fitView } = useReactFlow();
@@ -99,6 +99,13 @@ function Visualizer(props: VisualizeProps) {
 
   }, [nodes, edges])
 
+  useEffect(() => {
+    if (focusId) {
+      fitView({ nodes: [{ id: focusId }], duration: 500 });
+      setFocusId(null);
+    }
+  }, [focusId, fitView]);
+
   return (
     <div className='h-[100vh] w-[calc(100vw - 300px] flex'>
       <Sidebar />
@@ -109,7 +116,7 @@ function Visualizer(props: VisualizeProps) {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         // fitView
-        minZoom={0.001}
+        minZoom={0.1}
         style={{
           background: '#008080'
         }}
