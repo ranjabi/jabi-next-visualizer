@@ -1,4 +1,6 @@
+import useStore from "@/store"
 import { RouteNodePayload } from "@/types"
+import { useEffect } from "react"
 import { Handle, Position, Rect } from "reactflow"
 
 type RouteNodeProps = {
@@ -11,6 +13,26 @@ type RouteNodeProps = {
 }
 
 const RouteNode = (props: RouteNodeProps) => {
+  const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
+
+  // useEffect(() => {
+  //   setComponentsViewBounds(props.data.id, {
+  //     x: 0,
+  //     y: 0,
+  //     width: 150,
+  //     height: 40
+  //   })
+  //   // console.log('route node:', props.bounds.width, props.bounds.height)
+  //   // return () => {
+  //   //   setComponentsViewBounds(props.data.id, {
+  //   //     x: 0,
+  //   //     y: 0,
+  //   //     width: 0,
+  //   //     height: 0
+  //   //   })
+  //   // }
+  // }, [])
+
   return (
     <div style={{
         border: '1px solid #1a192b',

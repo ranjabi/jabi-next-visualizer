@@ -32,7 +32,7 @@ export type RFState = {
   setNodeViewToShowRoute: (nodeId: string) => void;
   selectedNode: Node<RouteNodePayload> | undefined
   setSelectedNode: (nodeId: string) => void
-  setComponentsViewBounds: (nodeId: string, bounds: Rect) => void
+  setComponentsViewBounds: (nodeId: string, bounds: Rect | undefined) => void
   rawFile: any
   setRawFile: (rawFile: any) => void
   setAllRoute: () => void
@@ -133,7 +133,7 @@ const useStore = create<RFState>((set, get) => ({
   setSelectedNode: (nodeId: string) => {
     set({ selectedNode: get().nodes.find(n => n.id === nodeId) })
   },
-  setComponentsViewBounds: (nodeId: string, bounds: Rect) => {
+  setComponentsViewBounds: (nodeId: string, bounds: Rect | undefined) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
@@ -141,6 +141,7 @@ const useStore = create<RFState>((set, get) => ({
             ...node.data,
             componentsViewBounds: bounds
           }
+          console.log('set bounds for', node.id, 'to', bounds)
 
           return {
             ...node,
@@ -162,10 +163,13 @@ const useStore = create<RFState>((set, get) => ({
       nodes: get().nodes.map(node => {
         node.data = {
           ...node.data,
-          isShowComponents: false
+          isShowComponents: false,
         }
 
-        return { ...node }
+        // node.position.x = 0
+        // node.position.y = 0
+
+        return node
       })
     })
   },
@@ -174,13 +178,15 @@ const useStore = create<RFState>((set, get) => ({
       nodes: get().nodes.map(node => {
         node.data = {
           ...node.data,
-          isShowComponents: true
+          isShowComponents: true,
         }
 
         // node.position.x = 0
         // node.position.y = 0
+        // node.width = 150
+        // node.height = 40
 
-        return { ...node }
+        return node
         // return node
       })
     })

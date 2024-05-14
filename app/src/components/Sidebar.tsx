@@ -1,14 +1,156 @@
-import useStore from "@/store";
+import useStore, { RFState } from "@/store";
 import { useShallow } from "zustand/react/shallow";
 import { Switch } from "./ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { useReactFlow } from "reactflow";
+import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
+
+
+const defaultOptions = {
+  'elk.algorithm': 'layered',
+  'elk.layered.spacing.nodeNodeBetweenLayers': 100,
+  'elk.spacing.nodeNode': 80,
+  'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+  'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+  'elk.direction': 'DOWN'
+};
+
+const selector = (state: RFState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes,
+  setEdges: state.setEdges,
+  isLayouted: state.isLayouted,
+  setIsLayouted: state.setIsLayouted,
+  viewType: state.viewType
+});
+
+// const useLayoutedElements = (nodes, setNodes, edges) => {
+  
+//   const { fitView } = useReactFlow();
+//   const defaultOptions = {
+//     'elk.algorithm': 'layered',
+//     'elk.layered.spacing.nodeNodeBetweenLayers': 100,
+//     'elk.spacing.nodeNode': 80,
+//     'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+//     'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+//     'elk.direction': 'DOWN'
+//   };
+
+//   const getLayoutedElements = () => {
+    
+//     const layoutOptions = { ...defaultOptions };
+//     const graph = {
+//       id: 'root',
+//       layoutOptions: layoutOptions,
+//       children: nodes.map(n => {
+//         console.log('isShow', n.data.isShowComponents)
+//         // if (n.data.componentsViewBounds) {
+//         //   const x = n.data.componentsViewBounds.x
+//         //   const y = n.data.componentsViewBounds.y
+//         //   const width = n.data.componentsViewBounds.width
+//         //   const height = n.data.componentsViewBounds.height
+//         //   console.log('use bounds for', n.id, width, height)
+//         //   return {...n, width: width + (2 * x), height: height + (2 * y)}
+//         // }
+
+//         return {...n}
+
+//         }
+//         // if (n.id.includes('kambing')) {
+//         //   console.log('bounds:', n.data.componentsViewBounds)
+//         // }
+//         // return n
+//       ),
+//       edges: edges,
+//     };
+
+//     const globalOptions = {
+//       layoutOptions: {
+//         'elk.alignment': 'TOP'
+//       }
+//     }
+
+//     elk.layout(graph, globalOptions).then(({ children }) => {
+//       children?.forEach((node) => {
+//         node.position = { x: node.x, y: node.y };
+//       });
+
+//       setNodes(children);
+//       window.requestAnimationFrame(() => {
+//         fitView();
+//       });
+//     });
+//   }
+
+//   return { getLayoutedElements };
+// };
 
 type SidebarProps = {
 
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const nodes = useStore(state => state.nodes)
+  const elk = new ELK();
+  const { nodes, edges, setNodes } = useStore(
+    useShallow(selector),
+  );
+  const getLayoutedElements = (elk, nodes, edges, setNodes) => {
+    
+    const layoutOptions = { ...defaultOptions };
+    const graph = {
+      id: 'root',
+      layoutOptions: layoutOptions,
+      children: nodes.map(n => {
+        // console.log('node', n.data.id, n.data.isShowComponents)
+        // console.log(n.data.componentsViewBounds)
+        if (n.data.isShowComponents) {
+          if (n.data.componentsViewBounds) {
+            const x = n.data.componentsViewBounds.x
+            const y = n.data.componentsViewBounds.y
+            const width = n.data.componentsViewBounds.width
+            const height = n.data.componentsViewBounds.height
+            // console.log('use bounds for', n.id, width, height)
+            return {...n, width: width + (2 * x), height: height + (2 * y)}
+          }
+          return {...n}
+        } else {
+          return {...n, width: 150, height: 40}
+        }
+
+        return {...n}
+
+        }
+        // if (n.id.includes('kambing')) {
+        //   console.log('bounds:', n.data.componentsViewBounds)
+        // }
+        // return n
+      ),
+      edges: edges,
+    };
+
+    const globalOptions = {
+      layoutOptions: {
+        'elk.alignment': 'TOP'
+      }
+    }
+
+    elk.layout(graph, globalOptions).then(({ children }) => {
+      children?.forEach((node) => {
+        node.position = { x: node.x, y: node.y };
+      });
+
+      setNodes(children);
+      // window.requestAnimationFrame(() => {
+      //   fitView();
+      // });
+    });
+  }
+  // const { getLayoutedElements } = useLayoutedElements(nodes, setNodes, edges);
+  // const nodes = useStore(state => state.nodes)
   const selectedNode = useStore(state => state.selectedNode)
   const setNodeViewToComponents = useStore(state => state.setNodeViewToShowComponents)
   const setNodeViewToRoute = useStore(state => state.setNodeViewToShowRoute)
@@ -34,10 +176,12 @@ const Sidebar = (props: SidebarProps) => {
       <button onClick={() => {
         setAllRoute()
         setIsLayouted(false)
+        // getLayoutedElements(elk, nodes, edges, setNodes)
         }}>set all route</button>
       <button onClick={() => {
         setAllComponents()
         setIsLayouted(false)
+        // getLayoutedElements(elk, nodes, edges, setNodes)
         }}>set all component</button>
       <p>isLayouted: {isLayouted === true ? 'true' : 'false'}</p>
       <p>selected node:</p>

@@ -35,6 +35,8 @@ export default function CustomNode(props: CustomNodeProps) {
     console.log(selectedNode)
   }
 
+  const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
+
   useEffect(() => {
     if (props.data.isShowComponents === false) {
       setBounds((prev) => {
@@ -44,6 +46,7 @@ export default function CustomNode(props: CustomNodeProps) {
           height: 40
         }
       })
+      // setComponentsViewBounds(props.data.id, undefined)
     }
   }, [props.data.isShowComponents])
 
