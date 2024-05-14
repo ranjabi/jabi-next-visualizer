@@ -49,8 +49,6 @@ const ComponentNode = (props: ComponentNodeProps) => {
   useEffect(() => {
     if (bounds.width !== 0 && bounds.height !== 0 && layouted) {
       props.setBounds(bounds)
-      // console.log('SET BOUNDSSSSSSSS', bounds)
-      // console.log('s et view bounds for:', props.id, 'bounds:', bounds)
       setComponentsViewBounds(props.id, bounds)
     }
 

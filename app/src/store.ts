@@ -24,12 +24,11 @@ export type RFState = {
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
   isLayouted: boolean;
-  // setIsLayouted: (fn: (prev: boolean) => boolean) => void;
   setIsLayouted: (isLayouted: boolean) => void;
   viewType: string;
   setViewType: (viewType: string) => void;
-  setNodeViewToShowComponents: (nodeId: string) => void;
-  setNodeViewToShowRoute: (nodeId: string) => void;
+  setNodeViewToComponents: (nodeId: string) => void;
+  setNodeViewToRoute: (nodeId: string) => void;
   selectedNode: Node<RouteNodePayload> | undefined
   setSelectedNode: (nodeId: string) => void
   setComponentsViewBounds: (nodeId: string, bounds: Rect | undefined) => void
@@ -38,6 +37,25 @@ export type RFState = {
   setAllRoute: () => void
   setAllComponents: () => void
 };
+
+export const selector = (state: RFState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  setNodes: state.setNodes,
+  setEdges: state.setEdges,
+  isLayouted: state.isLayouted,
+  setIsLayouted: state.setIsLayouted,
+  viewType: state.viewType,
+  selectedNode: state.selectedNode,
+  setNodeViewToComponents: state.setNodeViewToComponents,
+  setNodeViewToRoute: state.setNodeViewToRoute,
+  setSelectedNode: state.setSelectedNode,
+  setAllRoute: state.setAllRoute,
+  setAllComponents: state.setAllComponents
+});
 
 const useStore = create<RFState>((set, get) => ({
   nodes: [],
@@ -74,7 +92,7 @@ const useStore = create<RFState>((set, get) => ({
   setViewType: (viewType: string) => {
     set({ viewType })
   },
-  setNodeViewToShowComponents: (nodeId: string) => {
+  setNodeViewToComponents: (nodeId: string) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
@@ -102,7 +120,7 @@ const useStore = create<RFState>((set, get) => ({
       }),
     });
   },
-  setNodeViewToShowRoute: (nodeId: string) => {
+  setNodeViewToRoute: (nodeId: string) => {
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {

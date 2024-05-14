@@ -1,46 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import ReactFlow, {
   Panel, useReactFlow, ReactFlowProvider
 } from 'reactflow';
-import ComponentNode from "@/components/ComponentNode";
 import CustomNode from "@/components/CustomNode";
-import ELK, { ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
+import ELK from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
-import useStore, { RFState } from '../store';
+import useStore, { selector } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import Sidebar from './Sidebar';
 
-
-
-// const useLayoutedElements = (elk, nodes, edges, setNodes) => {
-  
-//   const { fitView } = useReactFlow();
-  const defaultOptions = {
-    'elk.algorithm': 'layered',
-    'elk.layered.spacing.nodeNodeBetweenLayers': 100,
-    'elk.spacing.nodeNode': 80,
-    'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
-    'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
-    'elk.direction': 'DOWN'
-  };
-
-  
-
-//   return { getLayoutedElements };
-// };
-
-const selector = (state: RFState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
-  setNodes: state.setNodes,
-  setEdges: state.setEdges,
-  isLayouted: state.isLayouted,
-  setIsLayouted: state.setIsLayouted,
-  viewType: state.viewType
-});
+const defaultOptions = {
+  'elk.algorithm': 'layered',
+  'elk.layered.spacing.nodeNodeBetweenLayers': 100,
+  'elk.spacing.nodeNode': 80,
+  'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+  'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+  'elk.direction': 'DOWN'
+};
 
 type VisualizeProps = {
 }
@@ -53,37 +29,27 @@ function Visualizer(props: VisualizeProps) {
   );
 
   const { fitView } = useReactFlow();
-  // const { getLayoutedElements } = useLayoutedElements(elk, nodes, edges, setNodes);
   const getLayoutedElements = (elk, nodes, edges, setNodes) => {
-    
+
     const layoutOptions = { ...defaultOptions };
     const graph = {
       id: 'root',
       layoutOptions: layoutOptions,
-      children: nodes.map(n => {
-        // console.log('node', n.data.id, n.data.isShowComponents)
-        // console.log(n.data.componentsViewBounds)
-        if (n.data.isShowComponents) {
-          if (n.data.componentsViewBounds) {
-            const x = n.data.componentsViewBounds.x
-            const y = n.data.componentsViewBounds.y
-            const width = n.data.componentsViewBounds.width
-            const height = n.data.componentsViewBounds.height
-            // console.log('use bounds for', n.id, width, height)
-            return {...n, width: width + (2 * x), height: height + (2 * y)}
+      children: nodes.map(node => {
+        if (node.data.isShowComponents) {
+          if (node.data.componentsViewBounds) {
+            const x = node.data.componentsViewBounds.x
+            const y = node.data.componentsViewBounds.y
+            const width = node.data.componentsViewBounds.width
+            const height = node.data.componentsViewBounds.height
+
+            return { ...node, width: width + (2 * x), height: height + (2 * y) }
           }
-          return {...n}
+          return node
         } else {
-          return {...n, width: 150, height: 40}
+          return { ...node, width: 150, height: 40 }
         }
-
-        // return {...n}
-
-        }
-        // if (n.id.includes('kambing')) {
-        //   console.log('bounds:', n.data.componentsViewBounds)
-        // }
-        // return n
+      }
       ),
       edges: edges,
     };
@@ -105,7 +71,6 @@ function Visualizer(props: VisualizeProps) {
       // });
     });
   }
-  const [layouted, setLayouted] = useState(false);
 
   useEffect(() => {
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
@@ -116,29 +81,9 @@ function Visualizer(props: VisualizeProps) {
         setIsLayouted(true)
         console.log('layouted')
       }
-
-      // if (nodes.every(n => n.width && n.width > 2 && n.height && n.height > 2 && n.position.x !== 0 && n.position.y !== 0)) {
-      //   setIsLayouted(true)
-      //   console.log('layouted')
-      // }
     }
 
   }, [nodes, edges])
-
-  // useEffect(() => {
-  //   nodes.forEach(n => {
-  //     // console.log('x:', n.position.x, 'y:', n.position.y, 'w:', n.width, 'h:', n.height)
-  //     if (n.id.includes('kambing')) {
-  //       console.log(n)
-  //     }
-  //   })
-  //   console.log('------------')
-  // }, [nodes])
-
-  // useEffect(() => {
-  //   console.log('is layouted CHANGED')
-  //   getLayoutedElements()
-  // }, [isLayouted])
 
   return (
     <div className='h-[100vh] w-[calc(100vw - 300px] flex'>
@@ -159,14 +104,8 @@ function Visualizer(props: VisualizeProps) {
           <button className='border border-solid border-black mx-1' >view type: {viewType}</button>
           <button className='border border-solid border-black mx-1' onClick={() => {
             getLayoutedElements(elk, nodes, edges, setNodes)
-            // nodes.forEach(n => {
-            //   if (n.id.includes('kambing')) {
-            //     console.log(n)
-            //   }
-            // })
-            // console.log('------------')
           }
-          }>vertical layout</button>
+          }>Layout</button>
         </Panel>
       </ReactFlow>
 

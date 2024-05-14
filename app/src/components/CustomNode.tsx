@@ -1,7 +1,6 @@
 import useStore from '@/store';
 import { RouteNodePayload } from '@/types';
 import { useEffect, useState } from 'react';
-import { Handle, NodeToolbar, Position } from 'reactflow';
 import CustomNodeWrapper from './ComponentNode';
 import RouteNode from './RouteNode';
 
@@ -10,7 +9,6 @@ type CustomNodeProps = {
 }
 
 export default function CustomNode(props: CustomNodeProps) {
-  const setNodeViewToComponents = useStore(state => state.setNodeViewToShowComponents)
   const setSelectedNodeId = useStore(state => state.setSelectedNode)
   const selectedNode = useStore(state => state.selectedNode)
   const [bounds, setBounds] = useState({
@@ -31,8 +29,6 @@ export default function CustomNode(props: CustomNodeProps) {
     // setIsLayouted(false)
     // setNodeViewToComponents(props.data.id)
     setSelectedNodeId(props.data.id)
-    console.log('clicked id:', props.data.id)
-    console.log(selectedNode)
   }
 
   const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
@@ -60,15 +56,7 @@ export default function CustomNode(props: CustomNodeProps) {
 
   return (
     <>
-    {/* <NodeToolbar
-        isVisible={true}
-        position={Position.Top}
-      >
-        <button>cut</button>
-        <button>copy</button>
-        <button>paste</button>
-      </NodeToolbar> */}
-    {props.data.isShowComponents ? ComponentView : RouteView}
+      {props.data.isShowComponents ? ComponentView : RouteView}
     </>
   );
 }

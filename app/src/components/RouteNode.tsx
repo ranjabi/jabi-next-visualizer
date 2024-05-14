@@ -1,13 +1,10 @@
 import useStore from "@/store"
 import { RouteNodePayload } from "@/types"
-import { useEffect } from "react"
 import { Handle, Position, Rect } from "reactflow"
 
 type RouteNodeProps = {
   bounds: Rect
   setBounds: React.Dispatch<React.SetStateAction<Rect>>
-  // width: number
-  // height: number
   data: RouteNodePayload
   handleClick: () => void
 }
