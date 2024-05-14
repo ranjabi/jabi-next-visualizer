@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import ReactFlow, { Handle, Panel, Position, ReactFlowProvider, getNodesBounds, useEdgesState, useNodesState, useReactFlow, type Rect, type Node as FlowNode, type Edge as FlowEdge } from 'reactflow';
 import Dagre from '@dagrejs/dagre';
 import 'reactflow/dist/style.css';
-import { RouteNodePayload } from '@/types';
+import { NodePayload } from '@/types';
 import useStore from '@/store';
 
 const rfStyle = {
@@ -10,11 +10,9 @@ const rfStyle = {
 };
 
 type ComponentNodeProps = {
-  id: string
+  data: NodePayload
   bounds: Rect
   setBounds: (bounds: Rect) => void
-  initialNodes: FlowNode[]
-  initialEdges: FlowEdge[]
 }
 
 const ComponentNode = (props: ComponentNodeProps) => {
@@ -40,8 +38,8 @@ const ComponentNode = (props: ComponentNodeProps) => {
   };
 
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(props.initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(props.initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(props.data.initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(props.data.initialEdges);
   const [layouted, setLayouted] = useState(false);
   const bounds = getNodesBounds(nodes);
   const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
@@ -49,7 +47,7 @@ const ComponentNode = (props: ComponentNodeProps) => {
   useEffect(() => {
     if (bounds.width !== 0 && bounds.height !== 0 && layouted) {
       props.setBounds(bounds)
-      setComponentsViewBounds(props.id, bounds)
+      setComponentsViewBounds(props.data.id, bounds)
     }
 
   }, [nodes])
@@ -87,40 +85,39 @@ const ComponentNode = (props: ComponentNodeProps) => {
   }, [nodes, edges])
 
   return (
-    <ReactFlowProvider>
-      <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} >
-        <ReactFlow
-          nodesDraggable={false}
-          panOnDrag={false}
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          style={rfStyle}
-        >
-          <Panel position="bottom-right">
-            <div>{JSON.stringify(bounds)}</div>
-          </Panel>
-        </ReactFlow>
+    <>
+      <div className='bg-white rounded-t pl-2'>
+        <p>{props.data.label}</p>
       </div>
-    </ReactFlowProvider>
+      <ReactFlowProvider>
+        <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} >
+          <ReactFlow
+            nodesDraggable={false}
+            panOnDrag={false}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            style={rfStyle}
+          >
+          </ReactFlow>
+        </div>
+      </ReactFlowProvider>
+    </>
   );
 };
 
 type CustomNodeWrapperProps = {
-  data: RouteNodePayload
-  bounds: Rect 
+  data: NodePayload
+  bounds: Rect
   setBounds: React.Dispatch<React.SetStateAction<Rect>>
 }
 
 function CustomNodeWrapper(props: CustomNodeWrapperProps) {
-
   return (
     <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }}>
       <Handle type="target" position={Position.Top} id="target" />
-      <div>
-        <ComponentNode id={props.data.id} bounds={props.bounds} setBounds={props.setBounds} initialNodes={props.data.initialNodes} initialEdges={props.data.initialEdges} />
-      </div>
+      <ComponentNode {...props} />
       <Handle type="source" position={Position.Bottom} id="source" />
     </div>
   );

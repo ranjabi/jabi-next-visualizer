@@ -10,7 +10,7 @@ import 'reactflow/dist/style.css';
 import useStore, { selector } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import Sidebar from './Sidebar';
-import { RouteNodePayload } from '@/types';
+import { NodePayload } from '@/types';
 
 const layoutOptions = {
   'elk.algorithm': 'layered',
@@ -32,9 +32,9 @@ function Visualizer(props: VisualizeProps) {
   );
   const { fitView } = useReactFlow();
   
-  const getLayoutedElements = (elk: ELKType, nodes: Node<RouteNodePayload>[], edges: Edge[], setNodes: (nodes: Node[]) => void) => {
+  const getLayoutedElements = (elk: ELKType, nodes: Node<NodePayload>[], edges: Edge[], setNodes: (nodes: Node[]) => void) => {
     const graph = {
-      id: 'root',
+      id: 'graph',
       layoutOptions: layoutOptions,
       children: nodes.map(node => {
         if (node.data.isShowComponents) {
@@ -81,10 +81,11 @@ function Visualizer(props: VisualizeProps) {
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
       getLayoutedElements(elk, nodes, edges, setNodes)
 
+      // route node only need 1 pass for layouting, hence it will immediately set isLayouted to true even though it doesn't meet the if condition
       if (
         nodes
         .filter(
-          n => n.data.isShowComponents && !n.id.includes('root') && !n.id.includes('posts')
+          n => n.data.isShowComponents && n.data.isLeaf
         )
         .every(
           n => n.data.componentsViewBounds

@@ -13,10 +13,10 @@ import {
   applyEdgeChanges,
   Rect,
 } from 'reactflow';
-import { RouteNodePayload } from './types';
+import { NodePayload } from './types';
 
 export type RFState = {
-  nodes: Node<RouteNodePayload>[];
+  nodes: Node<NodePayload>[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
@@ -29,7 +29,7 @@ export type RFState = {
   setViewType: (viewType: string) => void;
   setNodeViewToComponents: (nodeId: string) => void;
   setNodeViewToRoute: (nodeId: string) => void;
-  selectedNode: Node<RouteNodePayload> | undefined
+  selectedNode: Node<NodePayload> | undefined
   setSelectedNode: (nodeId: string) => void
   setComponentsViewBounds: (nodeId: string, bounds: Rect | undefined) => void
   rawFile: any
@@ -194,9 +194,11 @@ const useStore = create<RFState>((set, get) => ({
   setAllComponents: () => {
     set({
       nodes: get().nodes.map(node => {
-        node.data = {
-          ...node.data,
-          isShowComponents: true,
+        if (node.data.isLeaf) {
+          node.data = {
+            ...node.data,
+            isShowComponents: true,
+          }
         }
 
         // node.position.x = 0

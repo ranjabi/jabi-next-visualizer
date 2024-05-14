@@ -47,13 +47,14 @@ export type RouteNode = {
   name: string
   path: string
   children: RouteNode[]
-  data: RouteNodePayload
+  data: NodePayload
   url: string
 }
 
-export type RouteNodePayload = {
+export type NodePayload = {
   id: string
   label: string
+  fileName: string
   initialNodes: FlowNode[]
   initialEdges: FlowEdge[]
   style: {
@@ -62,4 +63,5 @@ export type RouteNodePayload = {
   }
   isShowComponents: boolean
   componentsViewBounds: Rect | undefined
+  isLeaf: boolean
 }

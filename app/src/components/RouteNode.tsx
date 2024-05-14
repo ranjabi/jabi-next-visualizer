@@ -1,11 +1,11 @@
 import useStore from "@/store"
-import { RouteNodePayload } from "@/types"
+import { NodePayload } from "@/types"
 import { Handle, Position, Rect } from "reactflow"
 
 type RouteNodeProps = {
   bounds: Rect
   setBounds: React.Dispatch<React.SetStateAction<Rect>>
-  data: RouteNodePayload
+  data: NodePayload
   handleClick: () => void
 }
 
@@ -42,7 +42,7 @@ const RouteNode = (props: RouteNodeProps) => {
       }} 
       onClick={props.handleClick}>
       <Handle type="target" position={Position.Top} />
-      <p>{props.data.label} {props.data.isShowComponents === true ? 'true' : 'false'}</p>
+      <p>{props.data.label}</p>
       <Handle type="source" position={Position.Bottom} />
     </div>
   )

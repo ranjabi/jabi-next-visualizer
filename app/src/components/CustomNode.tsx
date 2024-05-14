@@ -1,11 +1,11 @@
 import useStore from '@/store';
-import { RouteNodePayload } from '@/types';
+import { NodePayload } from '@/types';
 import { useEffect, useState } from 'react';
 import CustomNodeWrapper from './ComponentNode';
 import RouteNode from './RouteNode';
 
 type CustomNodeProps = {
-  data: RouteNodePayload
+  data: NodePayload
 }
 
 export default function CustomNode(props: CustomNodeProps) {

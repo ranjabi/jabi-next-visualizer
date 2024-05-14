@@ -20,8 +20,10 @@ export const parseAst = (fileContent: string) => {
   })
 
   // ExportDefaultDeclaration: "export default function Name()"
+  // @ts-ignore
   const initialAst = rawAst.program.body.find(
     (astNode) => astNode.type === 'ExportDefaultDeclaration',
+    // @ts-ignore
   ).declaration.body.body[0].argument;
 
   const parsedAst = parseNode([], initialAst) as Ast[]
@@ -29,6 +31,7 @@ export const parseAst = (fileContent: string) => {
   return parsedAst[0]
 }
 
+// @ts-ignore
 const parseNode = (oldNode, currentNode) => {
   let element = {};
   if (currentNode.type === 'JSXElement') {
@@ -41,8 +44,10 @@ const parseNode = (oldNode, currentNode) => {
   }
   if ('children' in currentNode) {
     currentNode.children.forEach(
+      // @ts-ignore
       (node) => {
         if (oldNode.length > 0) {
+          // @ts-ignore
           parseNode(element.children, node)
         } else {
           parseNode(oldNode, node)
@@ -169,6 +174,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
     data: {
       id: rootId,
       label: "/",
+      fileName: '',
       initialNodes: [],
       initialEdges: [],
       isShowComponents: false,
@@ -176,7 +182,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
         color: 'black',
         bgColor: 'white'
       },
-      componentsViewBounds: undefined
+      componentsViewBounds: undefined,
+      isLeaf: false
     }
   }  as RouteNode;
 
@@ -206,6 +213,10 @@ const convertToTree = (fileUploads: FileUpload[]) => {
             return parent + '/' + removeExtension(part)
           }
 
+          if (lookupNode) {
+            console.log('lookupnode exist for', id)
+          }
+
           foundChild = {
             id: id,
             name: part,
@@ -213,16 +224,18 @@ const convertToTree = (fileUploads: FileUpload[]) => {
             path: beginPath + pathParts.slice(0, index + 1).join('/'),
             data: {
               id: id,
+              fileName: part,
               // Append component nodes and edges
               initialNodes: lookupNode ? lookupNode.nodes : [],
               initialEdges: lookupNode ? lookupNode.edges : [],
               label: getLabel(part, currentNode.data.label),
               style: {
                 color: 'black',
-                bgColor: isLeaf(part) ? leafColor : 'white'
+                bgColor: 'white'
               },
-              isShowComponents: false,
-              componentsViewBounds: undefined
+              isShowComponents: true,
+              componentsViewBounds: undefined,
+              isLeaf: isLeaf(part) ? true : false
             },
             children: []
           };
