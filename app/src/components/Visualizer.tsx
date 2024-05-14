@@ -1,15 +1,18 @@
 import { useEffect, useMemo } from 'react';
 import ReactFlow, {
-  Panel, useReactFlow, ReactFlowProvider
+  Panel, useReactFlow, ReactFlowProvider,
+  Node,
+  Edge
 } from 'reactflow';
 import CustomNode from "@/components/CustomNode";
-import ELK from 'elkjs/lib/elk.bundled.js';
+import ELK, { type ELK as ELKType } from 'elkjs/lib/elk.bundled.js';
 import 'reactflow/dist/style.css';
 import useStore, { selector } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 import Sidebar from './Sidebar';
+import { RouteNodePayload } from '@/types';
 
-const defaultOptions = {
+const layoutOptions = {
   'elk.algorithm': 'layered',
   'elk.layered.spacing.nodeNodeBetweenLayers': 100,
   'elk.spacing.nodeNode': 80,
@@ -27,11 +30,9 @@ function Visualizer(props: VisualizeProps) {
   const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType } = useStore(
     useShallow(selector),
   );
-
   const { fitView } = useReactFlow();
-  const getLayoutedElements = (elk, nodes, edges, setNodes) => {
-
-    const layoutOptions = { ...defaultOptions };
+  
+  const getLayoutedElements = (elk: ELKType, nodes: Node<RouteNodePayload>[], edges: Edge[], setNodes: (nodes: Node[]) => void) => {
     const graph = {
       id: 'root',
       layoutOptions: layoutOptions,
@@ -60,26 +61,38 @@ function Visualizer(props: VisualizeProps) {
       }
     }
 
+    // @ts-ignore
     elk.layout(graph, globalOptions).then(({ children }) => {
       children?.forEach((node) => {
+        // @ts-ignore
         node.position = { x: node.x, y: node.y };
       });
 
-      setNodes(children);
-      // window.requestAnimationFrame(() => {
-      //   fitView();
-      // });
+      if (children) {
+        setNodes(children as Node[]);
+      }
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
     });
   }
 
   useEffect(() => {
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
-      console.log('layouted effect jalan')
       getLayoutedElements(elk, nodes, edges, setNodes)
 
-      if (nodes.filter(n => n.data.isShowComponents && !n.id.includes('root') && !n.id.includes('posts')).every(n => n.width === (n.data.componentsViewBounds?.width + 2 * n.data.componentsViewBounds?.x) && n.height === n.data.componentsViewBounds?.height + n.data.componentsViewBounds?.y * 2)) {
+      if (
+        nodes
+        .filter(
+          n => n.data.isShowComponents && !n.id.includes('root') && !n.id.includes('posts')
+        )
+        .every(
+          n => n.data.componentsViewBounds
+          && n.width === (n.data.componentsViewBounds?.width + (2 * n.data.componentsViewBounds?.x)) 
+          && n.height === (n.data.componentsViewBounds?.height + (2 * n.data.componentsViewBounds?.y))
+        )
+      ) {
         setIsLayouted(true)
-        console.log('layouted')
       }
     }
 
