@@ -58,7 +58,8 @@ export const selector = (state: RFState) => ({
   setAllRoute: state.setAllRoute,
   setAllComponents: state.setAllComponents,
   focusId: state.focusId,
-  setFocusId: state.setFocusId
+  setFocusId: state.setFocusId,
+  setSelectedNodeId: state.setSelectedNode
 });
 
 const useStore = create<RFState>((set, get) => ({

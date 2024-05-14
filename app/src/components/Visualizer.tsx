@@ -121,13 +121,12 @@ function Visualizer(props: VisualizeProps) {
           background: '#008080'
         }}
       >
-        <Panel position="top-right">
-          <button className='border border-solid border-black mx-1' >view type: {viewType}</button>
+        {/* <Panel position="top-right">
           <button className='border border-solid border-black mx-1' onClick={() => {
             getLayoutedElements(elk, nodes, edges, setNodes)
           }
           }>Layout</button>
-        </Panel>
+        </Panel> */}
       </ReactFlow>
 
     </div>
