@@ -53,16 +53,16 @@ var listDir = function () {
     console.log('Parse finished');
 };
 exports.listDir = listDir;
-program.command('listdir')
-    .description('List files in project\'s directories')
+program.command('parse')
+    .description('Parse routes file in project\'s directory')
     .action(function () {
     (0, exports.listDir)();
 });
-program.command('curdir')
-    .description('Curent dir from project directory')
-    .action(function () {
-    console.log("Curent dir from project directory:", process_1.default.cwd());
-});
+// program.command('curdir')
+//   .description('Curent dir from project directory')
+//   .action(() => {
+//     console.log("Curent dir from project directory:", process.cwd());
+//   });
 program.command('config')
     .action(function () {
     console.log('Config:', config_1.config);
