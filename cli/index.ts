@@ -55,17 +55,17 @@ export const listDir = () => {
   console.log('Parse finished')
 }
 
-program.command('listdir')
-  .description('List files in project\'s directories')
+program.command('parse')
+  .description('Parse routes file in project\'s directory')
   .action(() => {
     listDir()
   });
 
-program.command('curdir')
-  .description('Curent dir from project directory')
-  .action(() => {
-    console.log("Curent dir from project directory:", process.cwd());
-  });
+// program.command('curdir')
+//   .description('Curent dir from project directory')
+//   .action(() => {
+//     console.log("Curent dir from project directory:", process.cwd());
+//   });
 
 program.command('config')
   .action(() => {
