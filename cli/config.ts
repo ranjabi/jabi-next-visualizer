@@ -12,8 +12,8 @@ import process from 'process';
 // }
 
 export const config = {
-  cliPath: process.cwd() + '/cli-build',
   rawFileOutputPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/.visualizer/data.json',
   appPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/out',
-  appIndexPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/out/index.html'
+  appIndexPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/out/index.html',
+  serverPath: process.cwd() + '/node_modules/jabi-next-visualizer/cli-build/server.js'
 }

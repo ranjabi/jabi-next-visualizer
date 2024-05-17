@@ -3,17 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listDir = void 0;
 var process_1 = __importDefault(require("process"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var commander_1 = require("commander");
 var config_1 = require("./config");
+var execSync = require('child_process').execSync;
 var program = new commander_1.Command();
 program
     .name('jabi-next-visualizer')
     .description('Visualizer for Next.js routes and components');
-var listDir = function () {
+program.command('parse')
+    .description('Parse routes file in project\'s directory')
+    .action(function () {
     console.log('Starting to parse routes and components');
     var getFileExtension = function (filename) { return filename.split('.').pop(); };
     var allowedExtensions = new Set(['tsx']);
@@ -51,12 +53,6 @@ var listDir = function () {
         console.error(err);
     }
     console.log('Parse finished');
-};
-exports.listDir = listDir;
-program.command('parse')
-    .description('Parse routes file in project\'s directory')
-    .action(function () {
-    (0, exports.listDir)();
 });
 // program.command('curdir')
 //   .description('Curent dir from project directory')
@@ -66,5 +62,9 @@ program.command('parse')
 program.command('config')
     .action(function () {
     console.log('Config:', config_1.config);
+});
+program.command('server')
+    .action(function () {
+    execSync("node ".concat(config_1.config.serverPath), { stdio: 'inherit' });
 });
 program.parse();

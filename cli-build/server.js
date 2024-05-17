@@ -14,6 +14,9 @@ app.use((0, cors_1.default)());
 app.get('/raw-file', function (_req, res) {
     res.status(200).send(fs_1.default.readFileSync(config_1.config.rawFileOutputPath));
 });
+app.get('/', function (_req, res) {
+    res.sendFile(config_1.config.appIndexPath);
+});
 app.listen(port, function () {
     console.log("Server app listening on port ".concat(port));
 });
