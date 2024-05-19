@@ -92,9 +92,9 @@ const Sidebar = (props: SidebarProps) => {
       <div className="border border-gray-300 rounded-md p-4 mt-4 flex-1 overflow-auto">
         <p className="text-center">Available Routes</p>
         <div className="mt-4 flex flex-col gap-y-3">
-          {nodes.map(node => {
+          {nodes.filter(n => n.data.isLeaf).map(node => {
             return (
-              <Button variant={'outline'} onClick={() => handleRouteClick(node.data.id)}><p className="text-left w-full">{node.data.label}</p></Button>
+              <Button key={node.data.id} variant={'outline'} onClick={() => handleRouteClick(node.data.id)}><p className="text-left w-full">{node.data.label}</p></Button>
             )
           })}
         </div>
