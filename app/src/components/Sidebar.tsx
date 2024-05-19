@@ -7,7 +7,7 @@ type SidebarProps = {
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId } = useStore(
+  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit } = useStore(
     useShallow(selector),
   );
 
@@ -38,10 +38,12 @@ const Sidebar = (props: SidebarProps) => {
             <Button variant='outline' className="w-1/2" onClick={() => {
               setAllRoute()
               setIsLayouted(false)
+              setIsNeedToFit(true)
             }}>Route</Button>
             <Button variant='outline' className="w-1/2" onClick={() => {
               setAllComponents()
               setIsLayouted(false)
+              setIsNeedToFit(true)
             }}>Component</Button>
           </div>
         </div>

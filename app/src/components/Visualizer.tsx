@@ -27,12 +27,12 @@ type VisualizeProps = {
 function Visualizer(props: VisualizeProps) {
   const elk = new ELK();
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType, focusId, setFocusId } = useStore(
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType, focusId, setFocusId, isNeedToFit, setIsNeedToFit } = useStore(
     useShallow(selector),
   );
   const { fitView } = useReactFlow();
   
-  const getLayoutedElements = (elk: ELKType, nodes: Node<NodePayload>[], edges: Edge[], setNodes: (nodes: Node[]) => void) => {
+  const getLayoutedElements = (elk: ELKType, nodes: Node<NodePayload>[], edges: Edge[], setNodes: (nodes: Node[]) => void, isNeedToFit: boolean) => {
     const graph = {
       id: 'graph',
       layoutOptions: layoutOptions,
@@ -71,15 +71,18 @@ function Visualizer(props: VisualizeProps) {
       if (children) {
         setNodes(children as Node[]);
       }
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
+
+      if (isNeedToFit) {
+        window.requestAnimationFrame(() => {
+          fitView();
+        });
+      }
     });
   }
 
   useEffect(() => {
     if (!isLayouted && nodes.length > 1 && edges.length > 1) {
-      getLayoutedElements(elk, nodes, edges, setNodes)
+      getLayoutedElements(elk, nodes, edges, setNodes, isNeedToFit)
 
       // route node only need 1 pass for layouting, hence it will immediately set isLayouted to true even though it doesn't meet the if condition
       if (
@@ -94,6 +97,7 @@ function Visualizer(props: VisualizeProps) {
         )
       ) {
         setIsLayouted(true)
+        setIsNeedToFit(false)
       }
     }
 

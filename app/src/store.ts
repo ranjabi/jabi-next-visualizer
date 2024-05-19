@@ -38,6 +38,8 @@ export type RFState = {
   setAllComponents: () => void
   focusId: string | undefined | null
   setFocusId: (nodeId: string | null) => void
+  isNeedToFit: boolean
+  setIsNeedToFit: (isNeedToFit: boolean) => void
 };
 
 export const selector = (state: RFState) => ({
@@ -59,7 +61,9 @@ export const selector = (state: RFState) => ({
   setAllComponents: state.setAllComponents,
   focusId: state.focusId,
   setFocusId: state.setFocusId,
-  setSelectedNodeId: state.setSelectedNode
+  setSelectedNodeId: state.setSelectedNode,
+  isNeedToFit: state.isNeedToFit,
+  setIsNeedToFit: state.setIsNeedToFit
 });
 
 const useStore = create<RFState>((set, get) => ({
@@ -218,7 +222,11 @@ const useStore = create<RFState>((set, get) => ({
   focusId: undefined,
   setFocusId: (nodeId: string | null) => {
     set({ focusId: nodeId })
-  }
+  },
+  isNeedToFit: true,
+  setIsNeedToFit: (isNeedToFit: boolean) => {
+    set({ isNeedToFit })
+  },
 }));
 
 export default useStore;
