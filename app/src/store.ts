@@ -164,8 +164,7 @@ const useStore = create<RFState>((set, get) => ({
             ...node.data,
             componentsViewBounds: bounds
           }
-          console.log('set bounds for', node.id, 'to', bounds)
-
+          
           return {
             ...node,
             // width: bounds.width,

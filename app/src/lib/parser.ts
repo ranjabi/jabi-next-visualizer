@@ -2,13 +2,14 @@ import { uuid } from "./helper";
 import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode } from "@/types";
 import {
   type Node as FlowNode,
-  type Edge as FlowEdge,
-  ReactFlowProvider,
+  type Edge as FlowEdge
 } from 'reactflow';
-import { parse } from "@babel/parser"
+import { parse } from "@babel/parser";
 const leafColor = '#ff0072'
 
-// convert file content into ast
+/**
+ * convert file content into ast
+ */
 export const parseAst = (fileContent: string) => {
   // TODO: find type of rawAst
   const rawAst = parse(fileContent, {
@@ -19,14 +20,35 @@ export const parseAst = (fileContent: string) => {
     ],
   })
 
-  // ExportDefaultDeclaration: "export default function Name()"
-  // @ts-ignore
-  const initialAst = rawAst.program.body.find(
-    (astNode) => astNode.type === 'ExportDefaultDeclaration',
-    // @ts-ignore
-  ).declaration.body.body[0].argument;
+  let initialJsxElement = undefined
 
-  const parsedAst = parseNode([], initialAst) as Ast[]
+  // ExportDefaultDeclaration: "export default function Name()"
+  const ExportDefaultDeclaration = rawAst.program.body.find(
+    (astNode) => astNode.type === 'ExportDefaultDeclaration',
+  )
+
+  if (ExportDefaultDeclaration.declaration.type === 'FunctionDeclaration') {
+    initialJsxElement = ExportDefaultDeclaration.declaration
+    console.log()
+  } else if (ExportDefaultDeclaration.declaration.type === 'Identifier') {
+    const declarationName = ExportDefaultDeclaration.declaration.name
+    const FunctionDeclaration = rawAst.program.body.find(
+      (astNode) => astNode.type === 'FunctionDeclaration' && astNode.id.name === declarationName,
+    )
+
+    if (FunctionDeclaration) {
+      initialJsxElement = FunctionDeclaration
+    } else {
+      const VariableDeclaration = rawAst.program.body.find((astNode) => astNode.type === 'VariableDeclaration')
+      const AppDeclaration = VariableDeclaration.declarations.find(dec => dec.id.name === declarationName)
+      initialJsxElement = AppDeclaration.init
+    }
+  }
+
+  const jsxElement = initialJsxElement.body.body[0].argument
+
+
+  const parsedAst = parseNode([], jsxElement) as Ast[]
 
   return parsedAst[0]
 }
@@ -59,7 +81,7 @@ const parseNode = (oldNode, currentNode) => {
 };
 
 /**
- * option: 1 = route only, 2 = route with component
+ * Create an array of nodes and edges of route tree
  */
 export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload)
@@ -71,7 +93,7 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
 }
 
 /**
- * Add array of nodes and edges for component tree in each file
+ * Add array of nodes and edges of component tree to each route file
  */
 export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   const res = testFile.map(file => {
