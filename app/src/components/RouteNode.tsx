@@ -33,7 +33,9 @@ const RouteNode = (props: RouteNodeProps) => {
   return (
     <div style={{
       border: '1px solid #1a192b',
-      padding: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       borderRadius: '3px',
       background: props.data.style.bgColor,
       width: props.bounds.width,
