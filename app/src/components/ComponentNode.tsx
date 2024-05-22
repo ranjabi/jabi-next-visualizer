@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, { Handle, Panel, Position, ReactFlowProvider, getNodesBounds, useEdgesState, useNodesState, useReactFlow, type Rect, type Node as FlowNode, type Edge as FlowEdge } from 'reactflow';
 import Dagre from '@dagrejs/dagre';
 import 'reactflow/dist/style.css';
@@ -14,6 +14,8 @@ type ComponentNodeProps = {
   bounds: Rect
   setBounds: (bounds: Rect) => void
 }
+
+const additionalHeight = 32
 
 const ComponentNode = (props: ComponentNodeProps) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -46,10 +48,13 @@ const ComponentNode = (props: ComponentNodeProps) => {
 
   useEffect(() => {
     if (bounds.width !== 0 && bounds.height !== 0 && layouted) {
-      props.setBounds(bounds)
-      setComponentsViewBounds(props.data.id, bounds)
+      props.setBounds({
+        ...bounds,
+      })
+      setComponentsViewBounds(props.data.id, {
+        ...bounds,
+      })
     }
-
   }, [nodes])
 
   const onLayout = useCallback(
@@ -86,11 +91,11 @@ const ComponentNode = (props: ComponentNodeProps) => {
 
   return (
     <>
-      <div className='bg-white rounded-t pl-2'>
+      <div className={`bg-white rounded-t pl-2 h-[${additionalHeight}px] flex items-center`}>
         <p>{props.data.label}</p>
       </div>
       <ReactFlowProvider>
-        <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} >
+        <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} className={`absolute top-[${additionalHeight}px]`}>
           <ReactFlow
             nodesDraggable={false}
             panOnDrag={false}
@@ -107,16 +112,16 @@ const ComponentNode = (props: ComponentNodeProps) => {
   );
 };
 
-type CustomNodeWrapperProps = {
+type ComponentNodeWrapperProps = {
   data: NodePayload
   bounds: Rect
   setBounds: React.Dispatch<React.SetStateAction<Rect>>
   handleClick: () => void
 }
 
-function CustomNodeWrapper(props: CustomNodeWrapperProps) {
+function ComponentNodeWrapper(props: ComponentNodeWrapperProps) {
   return (
-    <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} onClick={props.handleClick}>
+    <div style={{ height: props.bounds.height + (2 * props.bounds.y) + additionalHeight, width: props.bounds.width + (2 * props.bounds.x) }} onClick={props.handleClick} className='relative'>
       <Handle type="target" position={Position.Top} id="target" />
       <ComponentNode {...props} />
       <Handle type="source" position={Position.Bottom} id="source" />
@@ -124,4 +129,4 @@ function CustomNodeWrapper(props: CustomNodeWrapperProps) {
   );
 }
 
-export default CustomNodeWrapper
+export default ComponentNodeWrapper

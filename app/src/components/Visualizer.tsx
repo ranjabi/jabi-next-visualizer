@@ -124,15 +124,7 @@ function Visualizer(props: VisualizeProps) {
         style={{
           background: '#008080'
         }}
-      >
-        {/* <Panel position="top-right">
-          <button className='border border-solid border-black mx-1' onClick={() => {
-            getLayoutedElements(elk, nodes, edges, setNodes)
-          }
-          }>Layout</button>
-        </Panel> */}
-      </ReactFlow>
-
+      ></ReactFlow>
     </div>
   );
 }
