@@ -23,8 +23,6 @@ export const parseAst = (fileContent: string) => {
     ],
   })
 
-  // console.log('rawAst:', rawAst)
-
   let initialJsxElement = undefined
 
   // ExportDefaultDeclaration: "export default function Name()"
@@ -37,7 +35,6 @@ export const parseAst = (fileContent: string) => {
     initialJsxElement = ExportDefaultDeclaration.declaration
   } else if (ExportDefaultDeclaration?.declaration.type === 'Identifier') {
     const declarationName = ExportDefaultDeclaration.declaration.name
-    // console.log('finding:', declarationName)
     const FunctionDeclaration = rawAst.program.body.find(
       (astNode) => astNode.type === 'FunctionDeclaration' && astNode.id.name === declarationName,
     )
@@ -46,17 +43,18 @@ export const parseAst = (fileContent: string) => {
       initialJsxElement = FunctionDeclaration
     } else {
       const VariableDeclaration = rawAst.program.body.find((astNode) => astNode.type === 'VariableDeclaration' && astNode.declarations.find(dec => dec.id.name === declarationName))
-      // console.log('VariableDeclaration:', VariableDeclaration)
       const AppDeclaration = VariableDeclaration?.declarations.find(dec => dec.id.name === declarationName)
-      // console.log('AppDeclaration:', AppDeclaration)
       initialJsxElement = AppDeclaration.init
     }
   }
-  // console.log('initialJsxElement:', initialJsxElement)
 
-  const jsxElement = initialJsxElement.body.body.find(n => n.type === 'ReturnStatement').argument
-  // console.log('jsxElement:', jsxElement)
+  let jsxElement
 
+  if (initialJsxElement.body.type === 'BlockStatement') {
+    jsxElement = initialJsxElement.body.body.find(n => n.type === 'ReturnStatement').argument
+  } else if (initialJsxElement.body.type === 'JSXElement') {
+    jsxElement = initialJsxElement.body
+  }
 
   const parsedAst = parseNode([], jsxElement) as Ast[]
 
@@ -73,7 +71,15 @@ const parseNode = (oldNode, currentNode) => {
       children: [],
     };
     oldNode.push(element);
+  } else if (currentNode.type === 'JSXFragment') {
+    element = {
+      id: uuid().slice(0, 8) + '-' + 'Fragment',
+      name: 'Fragment',
+      children: [],
+    };
+    oldNode.push(element);
   }
+
   if ('children' in currentNode) {
     currentNode.children.forEach(
       // @ts-ignore
@@ -87,6 +93,7 @@ const parseNode = (oldNode, currentNode) => {
       }
     );
   }
+
   return oldNode;
 };
 
@@ -120,8 +127,6 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
  */
 export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   const res = testFile.map(file => {
-    console.log('-------------------------')
-    console.log('parsing file:', file.path)
     const parsedAst = parseAst(file.content as string)
     const nodes = generateComponentNodes(parsedAst)
     const edges = generateComponentEdges(parsedAst)
@@ -259,8 +264,6 @@ const convertToTree = (fileUploads: FileUpload[]) => {
             }
             return parent + '/' + removeExtension(part)
           }
-
-          // console.log('new child path:', beginPath + '/' + pathParts.slice(0, index + 1).join('/'), 'begin path:', beginPath)
 
           foundChild = {
             id: id,
