@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { uuid } from "./helper";
 import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode } from "@/types";
 import {
@@ -5,6 +7,7 @@ import {
   type Edge as FlowEdge
 } from 'reactflow';
 import { parse } from "@babel/parser";
+import RouteNode from "@/components/RouteNode";
 const leafColor = '#ff0072'
 
 /**
@@ -20,6 +23,8 @@ export const parseAst = (fileContent: string) => {
     ],
   })
 
+  // console.log('rawAst:', rawAst)
+
   let initialJsxElement = undefined
 
   // ExportDefaultDeclaration: "export default function Name()"
@@ -27,11 +32,12 @@ export const parseAst = (fileContent: string) => {
     (astNode) => astNode.type === 'ExportDefaultDeclaration',
   )
 
-  if (ExportDefaultDeclaration.declaration.type === 'FunctionDeclaration') {
+  
+  if (ExportDefaultDeclaration?.declaration.type === 'FunctionDeclaration') {
     initialJsxElement = ExportDefaultDeclaration.declaration
-    console.log()
-  } else if (ExportDefaultDeclaration.declaration.type === 'Identifier') {
+  } else if (ExportDefaultDeclaration?.declaration.type === 'Identifier') {
     const declarationName = ExportDefaultDeclaration.declaration.name
+    // console.log('finding:', declarationName)
     const FunctionDeclaration = rawAst.program.body.find(
       (astNode) => astNode.type === 'FunctionDeclaration' && astNode.id.name === declarationName,
     )
@@ -39,13 +45,17 @@ export const parseAst = (fileContent: string) => {
     if (FunctionDeclaration) {
       initialJsxElement = FunctionDeclaration
     } else {
-      const VariableDeclaration = rawAst.program.body.find((astNode) => astNode.type === 'VariableDeclaration')
-      const AppDeclaration = VariableDeclaration.declarations.find(dec => dec.id.name === declarationName)
+      const VariableDeclaration = rawAst.program.body.find((astNode) => astNode.type === 'VariableDeclaration' && astNode.declarations.find(dec => dec.id.name === declarationName))
+      // console.log('VariableDeclaration:', VariableDeclaration)
+      const AppDeclaration = VariableDeclaration?.declarations.find(dec => dec.id.name === declarationName)
+      // console.log('AppDeclaration:', AppDeclaration)
       initialJsxElement = AppDeclaration.init
     }
   }
+  // console.log('initialJsxElement:', initialJsxElement)
 
-  const jsxElement = initialJsxElement.body.body[0].argument
+  const jsxElement = initialJsxElement.body.body.find(n => n.type === 'ReturnStatement').argument
+  // console.log('jsxElement:', jsxElement)
 
 
   const parsedAst = parseNode([], jsxElement) as Ast[]
@@ -80,12 +90,25 @@ const parseNode = (oldNode, currentNode) => {
   return oldNode;
 };
 
+const tidyRoute = (routeNode: RouteNode) => {
+  if (routeNode.children.length === 1 && routeNode.children[0].path.includes('index')) {
+    routeNode = routeNode.children[0]
+  }
+  const newChildren = routeNode.children.map(n => {
+    return tidyRoute(n)
+  })
+  routeNode.children = newChildren
+
+  return routeNode
+}
+
 /**
  * Create an array of nodes and edges of route tree
  */
 export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload)
-  const routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
+  const _routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
+  const routeTree = tidyRoute(_routeTree)
   const initialNodes = generateRouteNodes(routeTree)
   const initialEdges = generateRouteEdges(routeTree)
 
@@ -97,6 +120,8 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
  */
 export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   const res = testFile.map(file => {
+    console.log('-------------------------')
+    console.log('parsing file:', file.path)
     const parsedAst = parseAst(file.content as string)
     const nodes = generateComponentNodes(parsedAst)
     const edges = generateComponentEdges(parsedAst)
@@ -235,15 +260,13 @@ const convertToTree = (fileUploads: FileUpload[]) => {
             return parent + '/' + removeExtension(part)
           }
 
-          if (lookupNode) {
-            console.log('lookupnode exist for', id)
-          }
+          // console.log('new child path:', beginPath + '/' + pathParts.slice(0, index + 1).join('/'), 'begin path:', beginPath)
 
           foundChild = {
             id: id,
             name: part,
             url: '/' + removeExtension(part),
-            path: beginPath + pathParts.slice(0, index + 1).join('/'),
+            path: beginPath + '/' + pathParts.slice(0, index + 1).join('/'),
             data: {
               id: id,
               fileName: part,
