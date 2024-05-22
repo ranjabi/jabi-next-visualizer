@@ -1,21 +1,23 @@
-import useStore from '@/store';
+import useStore, { selector } from '@/store';
 import { NodePayload } from '@/types';
 import { useEffect, useState } from 'react';
 import CustomNodeWrapper from './ComponentNode';
 import RouteNode from './RouteNode';
+import { useShallow } from 'zustand/react/shallow';
 
 type CustomNodeProps = {
   data: NodePayload
 }
 
 export default function CustomNode(props: CustomNodeProps) {
-  const setSelectedNodeId = useStore(state => state.setSelectedNode)
-  const selectedNode = useStore(state => state.selectedNode)
+  const { setSelectedNodeId, routeNodeSize } = useStore(
+    useShallow(selector),
+  );
   const [bounds, setBounds] = useState({
     x: 0,
     y: 0,
-    width: 150,
-    height: 40
+    width: routeNodeSize.width,
+    height: routeNodeSize.height
   })
   const setIsLayouted = useStore(state => state.setIsLayouted)
   const handleClick = () => {
@@ -38,8 +40,8 @@ export default function CustomNode(props: CustomNodeProps) {
       setBounds((prev) => {
         return {
           ...prev,
-          width: 150,
-          height: 40
+          width: routeNodeSize.width,
+          height: routeNodeSize.height
         }
       })
       // setComponentsViewBounds(props.data.id, undefined)

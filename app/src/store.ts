@@ -40,6 +40,7 @@ export type RFState = {
   setFocusId: (nodeId: string | null) => void
   isNeedToFit: boolean
   setIsNeedToFit: (isNeedToFit: boolean) => void
+  routeNodeSize: {width: number, height: number}
 };
 
 export const selector = (state: RFState) => ({
@@ -63,7 +64,8 @@ export const selector = (state: RFState) => ({
   setFocusId: state.setFocusId,
   setSelectedNodeId: state.setSelectedNode,
   isNeedToFit: state.isNeedToFit,
-  setIsNeedToFit: state.setIsNeedToFit
+  setIsNeedToFit: state.setIsNeedToFit,
+  routeNodeSize: state.routeNodeSize
 });
 
 const useStore = create<RFState>((set, get) => ({
@@ -143,8 +145,8 @@ const useStore = create<RFState>((set, get) => ({
 
           return {
             ...node,
-            width: 150,
-            height: 40,
+            width: get().routeNodeSize.width,
+            height: get().routeNodeSize.height,
 
           };
         }
@@ -227,6 +229,7 @@ const useStore = create<RFState>((set, get) => ({
   setIsNeedToFit: (isNeedToFit: boolean) => {
     set({ isNeedToFit })
   },
+  routeNodeSize: { width: 180, height: 60 }
 }));
 
 export default useStore;

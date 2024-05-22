@@ -27,7 +27,7 @@ type VisualizeProps = {
 function Visualizer(props: VisualizeProps) {
   const elk = new ELK();
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
-  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges, isLayouted, setIsLayouted, viewType, focusId, setFocusId, isNeedToFit, setIsNeedToFit } = useStore(
+  const { nodes, edges, onNodesChange, onEdgesChange, setNodes, isLayouted, setIsLayouted, viewType, focusId, setFocusId, isNeedToFit, setIsNeedToFit, routeNodeSize } = useStore(
     useShallow(selector),
   );
   const { fitView } = useReactFlow();
@@ -48,7 +48,7 @@ function Visualizer(props: VisualizeProps) {
           }
           return node
         } else {
-          return { ...node, width: 150, height: 40 }
+          return { ...node, width: routeNodeSize.width , height: routeNodeSize.height }
         }
       }
       ),
