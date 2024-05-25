@@ -23,6 +23,21 @@ export const parseAst = (fileContent: string) => {
     ],
   })
 
+  const importedFile = []
+
+  rawAst.program.body.filter(e => e.type === 'ImportDeclaration').forEach(e => {
+    const splitted = e.source.value.split('/')
+
+    if (splitted[0] === '@') {
+      let componentName = splitted[splitted.length - 1]
+
+      if (!componentName.includes('.tsx')) {
+        componentName += '.tsx'
+      }
+      importedFile.push(componentName)
+    }
+  })
+
   let initialJsxElement = undefined
 
   // ExportDefaultDeclaration: "export default function Name()"
@@ -58,7 +73,7 @@ export const parseAst = (fileContent: string) => {
 
   const parsedAst = parseNode([], jsxElement) as Ast[]
 
-  return parsedAst[0]
+  return { parsedAst: parsedAst[0], importedFile: importedFile }
 }
 
 // @ts-ignore
@@ -126,8 +141,10 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
  * Add array of nodes and edges of component tree to each route file
  */
 export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
-  const res = testFile.map(file => {
-    const parsedAst = parseAst(file.content as string)
+  let res = testFile.map(file => {
+    const parsedResult = parseAst(file.content as string)
+    const parsedAst = parsedResult.parsedAst
+    
     const nodes = generateComponentNodes(parsedAst)
     const edges = generateComponentEdges(parsedAst)
     const newFileTree = {
@@ -135,10 +152,47 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
       path: file.path,
       content: file.content,
       nodes: nodes,
-      edges: edges
+      edges: edges,
+      importedFile: parsedResult.importedFile
     }
+    
     return newFileTree
   })
+
+  res = res.map(resItem => {
+    if (resItem.importedFile.length > 0) {
+      const resWithImportedFile = res.find(item => item.name === resItem.importedFile[0])
+
+      if (resWithImportedFile) {
+        resItem.nodes.forEach(resItemNode => {
+          if ((resItemNode.data.label + '.tsx') === resItem.importedFile[0]) {
+            const extendedNodes = resWithImportedFile.nodes.map(node => {
+              return {
+                ...node,
+                id: 'ext-' + uuid().slice(0,6) + '-' + node.id
+              } 
+            })
+            const extendedEdges = resWithImportedFile.edges.map(edge => {
+              return {
+                id: 'ext-' + uuid().slice(0,6) + '-' + edge.id,
+                source: extendedNodes.find(ns => ns.id.includes(edge.source)).id,
+                target: extendedNodes.find(nt => nt.id.includes(edge.target)).id
+              } 
+            })
+            resItem.nodes.push(...extendedNodes)
+            resItem.edges.push({
+              id: 'extended-' + resItemNode.id + '-TO-' + resItem.importedFile[0],
+              source: resItemNode.id,
+              target: extendedNodes[0].id
+            })
+            resItem.edges.push(...extendedEdges)
+          }
+        })
+      }
+    }
+    return resItem
+  })
+
   return res
 }
 
