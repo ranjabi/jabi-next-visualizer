@@ -213,8 +213,9 @@ function getParentDirectory(path: string) {
  * component tree nodes and edges
  */
 const convertToTree = (fileUploads: FileUpload[]) => {
-  // const beginPath = 'sample/src/pages/'
-  const beginPath = getParentDirectory(fileUploads[0].path)
+  const beginPath = fileUploads.find(e => e.path.includes('src')) ? 'src/pages' : 'pages'
+  const slicePos = beginPath === 'src/pages' ? 2 : 1
+
   const rootId = uuid().slice(0, 6) + '-root'
 
   const root = {
@@ -240,8 +241,10 @@ const convertToTree = (fileUploads: FileUpload[]) => {
   }  as RouteNode;
 
   fileUploads.forEach(item => {
-    // slice(3) because we get rid of 'sample/src/pages/'
-    const pathParts = item.path.split('/').slice(2);
+    if (!item.path.includes(beginPath)) {
+      return
+    }
+    const pathParts = item.path.split('/').slice(slicePos);
     let currentNode = root;
 
     pathParts.forEach((part, index) => {
@@ -281,7 +284,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: 'white'
               },
-              isShowComponents: false,
+              isShowComponents: isLeaf(part) ? true : false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false
             },

@@ -42,6 +42,7 @@ program.command('parse')
     }
 
     const currentPath = process.cwd()
+    console.log('Start parsing from: ', currentPath)
     let dirRes = [] as RawFile[];
     rec_file(currentPath, '', dirRes)
 
