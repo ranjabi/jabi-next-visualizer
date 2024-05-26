@@ -12,7 +12,7 @@ type SidebarProps = {
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus } = useStore(
+  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus, viewType, setViewType } = useStore(
     useShallow(selector),
   );
   const [routeQuery, setRouteQuery] = useState('')
@@ -50,16 +50,32 @@ const Sidebar = (props: SidebarProps) => {
         <div className="mt-4">
           <p className="font-semibold">View Type:</p>
           <div className="flex gap-x-3 mt-1">
-            <Button variant='outline' className="w-1/2" onClick={() => {
-              setAllRoute()
-              setIsLayouted(false)
-              setIsNeedToFit(true)
-            }}>Route</Button>
-            <Button variant='outline' className="w-1/2" onClick={() => {
-              setAllComponents()
-              setIsLayouted(false)
-              setIsNeedToFit(true)
-            }}>Component</Button>
+            <ToggleGroup
+              size={'sm'}
+              type="single"
+              className='mt-1 flex gap-x-3 w-full'
+              variant={'outline'}
+              value={viewType}
+              onValueChange={(value) => {
+                if (viewType === 'route') {
+                  setViewType('component')
+                  setAllComponents()
+                } else if (viewType === 'component') {
+                  setViewType('route')
+                  setAllRoute()
+
+                }
+                setIsLayouted(false)
+                setIsNeedToFit(true)
+              }}
+            >
+              <ToggleGroupItem value="route" className="w-1/2" aria-label="Toggle route">
+                <p>Route</p>
+              </ToggleGroupItem>
+              <ToggleGroupItem value="component" className="w-1/2" aria-label="Toggle component">
+                <p>Component</p>
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
         </div>
       </div>

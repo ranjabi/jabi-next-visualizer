@@ -55,6 +55,7 @@ export const selector = (state: RFState) => ({
   isLayouted: state.isLayouted,
   setIsLayouted: state.setIsLayouted,
   viewType: state.viewType,
+  setViewType: state.setViewType,
   selectedNode: state.selectedNode,
   setNodeViewToComponents: state.setNodeViewToComponents,
   setNodeViewToRoute: state.setNodeViewToRoute,
@@ -101,7 +102,7 @@ const useStore = create<RFState>((set, get) => ({
   // setIsLayouted: (fn: (prev: boolean) => boolean) => {
   //   set((state => ({ isLayouted: fn(state.isLayouted) })));
   // },
-  viewType: 'route',
+  viewType: 'component',
   setViewType: (viewType: string) => {
     set({ viewType })
   },
