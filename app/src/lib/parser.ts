@@ -45,7 +45,6 @@ export const parseAst = (fileContent: string) => {
     (astNode) => astNode.type === 'ExportDefaultDeclaration',
   )
 
-  
   if (ExportDefaultDeclaration?.declaration.type === 'FunctionDeclaration') {
     initialJsxElement = ExportDefaultDeclaration.declaration
   } else if (ExportDefaultDeclaration?.declaration.type === 'Identifier') {
@@ -159,39 +158,125 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
     return newFileTree
   })
 
-  res = res.map(resItem => {
-    if (resItem.importedFile.length > 0) {
-      const resWithImportedFile = res.find(item => item.name === resItem.importedFile[0])
+  // // if (isRecursive) {
+  //   res = res.map(resItem => {
+  //     // if (resItem.path.split('/').includes('pages')) {
 
-      if (resWithImportedFile) {
-        resItem.nodes.forEach(resItemNode => {
-          if ((resItemNode.data.label + '.tsx') === resItem.importedFile[0]) {
-            const extendedNodes = resWithImportedFile.nodes.map(node => {
-              return {
-                ...node,
-                id: 'ext-' + uuid().slice(0,6) + '-' + node.id
-              } 
-            })
-            const extendedEdges = resWithImportedFile.edges.map(edge => {
-              return {
-                id: 'ext-' + uuid().slice(0,6) + '-' + edge.id,
-                source: extendedNodes.find(ns => ns.id.includes(edge.source)).id,
-                target: extendedNodes.find(nt => nt.id.includes(edge.target)).id
-              } 
-            })
-            resItem.nodes.push(...extendedNodes)
-            resItem.edges.push({
-              id: 'extended-' + resItemNode.id + '-TO-' + resItem.importedFile[0],
-              source: resItemNode.id,
-              target: extendedNodes[0].id
-            })
-            resItem.edges.push(...extendedEdges)
-          }
-        })
-      }
-    }
-    return resItem
-  })
+  //     // console.log('resItem:', resItem.name)
+  //     if (resItem.importedFile.length > 0) {
+  //       // console.log('resItem.importedFile:', resItem.importedFile)
+  //       // untuk setiap import
+  //       resItem.importedFile.forEach((resItemImportedFile, idx) => {
+  //         // if (idx === 0) {
+
+  //         const resWithImportedFile = res.find(item => item.name === resItemImportedFile)
+  //         // console.log('resWithImportedFile:', resWithImportedFile)
+
+  //         if (resWithImportedFile) {
+  //           resItem.nodes.forEach((resItemNode) => {
+  //             if ((resItemNode.data.label + '.tsx') === resItemImportedFile) { // duplicate occur here
+  //               //   // parent node of imported file
+  //               // console.log('res item nodes before:', resItem.nodes)
+  //               // if (!resItem.path.split('/').includes('pages')) {
+  //               // kalo bukan pages, buat node clone
+  //               const extendedNodes = resWithImportedFile.nodes.map(node => {
+  //                 return {
+  //                   // hidden: true,
+  //                   ...node,
+  //                   data: { label: ' ' + node.data.label },
+  //                   id: 'ext-' + uuid().slice(0, 6) + '-' + node.id
+  //                 }
+  //               })
+
+  //               const extendedEdges = resWithImportedFile.edges.map(edge => {
+  //                 return {
+  //                   // hidden: true,
+  //                   id: 'ext-' + uuid().slice(0, 6) + '-' + edge.id,
+  //                   source: extendedNodes.find(ns => ns.id.includes(edge.source)).id,
+  //                   target: extendedNodes.find(nt => nt.id.includes(edge.target)).id,
+  //                   // data: {hidden: true}
+  //                 }
+  //               })
+
+  //               resItem.nodes.push(...extendedNodes)
+  //               resItem.edges.push({
+  //                 // hidden: true,
+  //                 id: 'extended-' + resItemNode.id + '-TO-' + resItemImportedFile,
+  //                 source: resItemNode.id,
+  //                 target: extendedNodes[0].id,
+  //                 // data: {hidden: true}
+  //               })
+  //               resItem.edges.push(...extendedEdges)
+  //               // }
+  //               // else {
+  //               //   // kalo pages, pake node dari components
+  //               //   // if (resWithImportedFile.name)
+  //               //   console.log('resWithImportedFile.name:', resWithImportedFile.name, resItem.nodes.find(e => e.id.endsWith(resWithImportedFile.name.split('.')[0])))
+  //               //   const extendedNodes = resWithImportedFile.nodes.filter(node => {
+  //               //     const sixCharPattern = '[a-zA-Z0-9]{6}';
+  //               //     const regexPattern = `^ext-${sixCharPattern}-${node.id}$`;
+  //               //     const regexObj = new RegExp(regexPattern);
+  //               //     if (resItem.nodes.find(item => regexObj.test(item.id))) {
+  //               //       // console.log('match node')
+  //               //       return false
+  //               //     }
+  //               //     return true
+  //               //   }).map(node => {
+  //               //     const nodeId = 'ext-' + uuid().slice(0, 6) + '-' + node.id
+  //               //     return {
+  //               //       ...node,
+  //               //       // data: {label: 'x' + node.data.label},
+  //               //       id: nodeId
+  //               //     }
+  //               //   })
+
+  //               //   let flag = true
+
+  //               //   const extendedEdges = resWithImportedFile.edges.filter(edge => {
+  //               //     const sixCharPattern = '[a-zA-Z0-9]{6}';
+  //               //     const regexPattern = `^ext-${sixCharPattern}-${edge.id}$`;
+  //               //     const regexObj = new RegExp(regexPattern);
+  //               //     if (resItem.edges.find(item => regexObj.test(item.id))) {
+  //               //       flag = false
+  //               //       // console.log('match edge')
+  //               //       return false
+  //               //     }
+  //               //     return true
+  //               //   }).map(edge => {
+  //               //     const edgeId = 'ext-' + uuid().slice(0, 6) + '-' + edge.id
+
+  //               //     return {
+  //               //       id: edgeId,
+  //               //       source: extendedNodes.find(ns => ns.id.endsWith(edge.source)).id,
+  //               //       target: extendedNodes.find(nt => nt.id.endsWith(edge.target)).id
+  //               //     }
+  //               //   })
+
+  //               //   resItem.nodes.push(...extendedNodes)
+  //               //   console.log('extendedNodes:', extendedNodes)
+  //               //   if (flag) {
+  //               //     resItem.edges.push({
+  //               //       id: 'extended-' + resItemNode.id + '-TO-' + resItemImportedFile,
+  //               //       source: resItemNode.id,
+  //               //       target: extendedNodes[0].id
+  //               //     })
+  //               //   }
+  //               //   resItem.edges.push(...extendedEdges)
+  //               // }
+  //             }
+  //           })
+  //         }
+  //         // }
+  //       })
+  //     }
+  //     // if (resItem.name.includes('index.tsx')) {
+  //     // console.log('node:', resItem.nodes)
+  //     // console.log('edge:', resItem.edges)
+  //     // }
+  //     // }
+  //     return resItem
+  //   })
+  // // }
 
   return res
 }
@@ -204,7 +289,8 @@ function generateComponentNodes(ast: Ast) {
     const newNode = {
       id: node.id || node.name,
       data: { label: node.name },
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
+      // type: 'innerComponentNode'
     };
 
     nodes.push(newNode);
@@ -290,9 +376,10 @@ const convertToTree = (fileUploads: FileUpload[]) => {
         bgColor: 'white'
       },
       componentsViewBounds: undefined,
-      isLeaf: false
+      isLeaf: false,
+      isRecursive: false
     }
-  }  as RouteNode;
+  } as RouteNode;
 
   fileUploads.forEach(item => {
     if (!item.path.includes(beginPath)) {
@@ -340,7 +427,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
               },
               isShowComponents: isLeaf(part) ? true : false,
               componentsViewBounds: undefined,
-              isLeaf: isLeaf(part) ? true : false
+              isLeaf: isLeaf(part) ? true : false,
+              isRecursive: false
             },
             children: []
           };
@@ -362,9 +450,9 @@ const isLeaf = (part: string) => {
 
 function removeExtension(filename: string) {
   if (filename.endsWith('.tsx')) {
-      return filename.slice(0, -4);
+    return filename.slice(0, -4);
   } else {
-      return filename;
+    return filename;
   }
 }
 
@@ -376,7 +464,8 @@ function generateRouteNodes(routeNode: RouteNode) {
   function traverse(node: RouteNode) {
     const newNode = {
       id: node.id || node.name,
-      data: {...node.data,
+      data: {
+        ...node.data,
         style: {
           bgColor: node.data.style.bgColor,
           color: node.data.style.bgColor === leafColor ? 'white' : 'black'
