@@ -2,6 +2,10 @@ import useStore, { selector } from "@/store";
 import { useShallow } from "zustand/react/shallow";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { Button } from "./ui/button";
+import { Input } from "@/components/ui/input"
+import { useState } from "react";
+import { NodePayload } from "@/types";
+import type { Node } from "reactflow";
 
 type SidebarProps = {
 }
@@ -10,6 +14,16 @@ const Sidebar = (props: SidebarProps) => {
   const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit } = useStore(
     useShallow(selector),
   );
+  const [routeQuery, setRouteQuery] = useState('')
+  const getFilteredRoutes = (query: string, routes: Node<NodePayload>[]) => {
+    if (!query) {
+      return routes
+    }
+
+    return routes.filter((route => route.data.label.includes(query)))
+  }
+
+  const filteredRoutes = getFilteredRoutes(routeQuery, nodes.filter(n => n.data.isLeaf))
 
   const getToggleValue = (isShowComponents: boolean) => {
     if (isShowComponents) {
@@ -28,7 +42,7 @@ const Sidebar = (props: SidebarProps) => {
   }
 
   return (
-    <div className='flex flex-col h-[100vh] w-[300px] bg-white p-4'>
+    <div className='flex flex-col h-[100vh]  min-w-[300px] max-w-[300px] bg-white p-4'>
       {/* Global Options */}
       <div className="border border-gray-300 rounded-md p-4">
         <p className="text-center">Global Options</p>
@@ -93,8 +107,9 @@ const Sidebar = (props: SidebarProps) => {
       {/* Available Routes */}
       <div className="border border-gray-300 rounded-md p-4 mt-4 flex-1 overflow-auto">
         <p className="text-center">Available Routes</p>
+        <Input className="mt-4" placeholder="Find route..." onChange={(e) => setRouteQuery(e.target.value)}/>
         <div className="mt-4 flex flex-col gap-y-3">
-          {nodes.filter(n => n.data.isLeaf).map(node => {
+          {filteredRoutes.map(node => {
             return (
               <Button key={node.data.id} variant={'outline'} onClick={() => handleRouteClick(node.data.id)}><p className="text-left w-full">{node.data.label}</p></Button>
             )
