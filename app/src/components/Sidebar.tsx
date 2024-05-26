@@ -128,7 +128,7 @@ const Sidebar = (props: SidebarProps) => {
         <div className="mt-4 flex flex-col gap-y-2">
           {filteredRoutes.map(node => {
             return (
-              <div className="flex gap-x-2 items-center border p-2 rounded-md">
+              <div key={node.data.id} className="flex gap-x-2 items-center border p-2 rounded-md">
                 <Checkbox className="rounded-sm" checked={!node.data.isHidden} onCheckedChange={() => {
                   if (node.data.isHidden) {
                     setNodeHiddenStatus(false, node.id)
@@ -138,7 +138,7 @@ const Sidebar = (props: SidebarProps) => {
                   setIsLayouted(false)
                   setIsNeedToFit(true)
                 }} />
-                <p key={node.data.id} className="text-left w-full hover:cursor-pointer" onClick={() => handleRouteClick(node.data.id)}>{node.data.label}</p>
+                <p className="text-left w-full hover:cursor-pointer" onClick={() => handleRouteClick(node.data.id)}>{node.data.label}</p>
               </div>
             )
           })}
