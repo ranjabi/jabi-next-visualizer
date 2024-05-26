@@ -377,7 +377,9 @@ const convertToTree = (fileUploads: FileUpload[]) => {
       },
       componentsViewBounds: undefined,
       isLeaf: false,
-      isRecursive: false
+      // isRecursive: false,
+      isHidden: false
+
     }
   } as RouteNode;
 
@@ -428,7 +430,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
               isShowComponents: isLeaf(part) ? true : false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
-              isRecursive: false
+              // isRecursive: false
+              isHidden: false
             },
             children: []
           };

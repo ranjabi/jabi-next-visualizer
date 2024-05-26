@@ -41,6 +41,7 @@ export type RFState = {
   isNeedToFit: boolean
   setIsNeedToFit: (isNeedToFit: boolean) => void
   routeNodeSize: {width: number, height: number}
+  setNodeHiddenStatus: (isHidden: boolean, nodeId: string) => void
 };
 
 export const selector = (state: RFState) => ({
@@ -65,7 +66,8 @@ export const selector = (state: RFState) => ({
   setSelectedNodeId: state.setSelectedNode,
   isNeedToFit: state.isNeedToFit,
   setIsNeedToFit: state.setIsNeedToFit,
-  routeNodeSize: state.routeNodeSize
+  routeNodeSize: state.routeNodeSize,
+  setNodeHiddenStatus: state.setNodeHiddenStatus
 });
 
 const useStore = create<RFState>((set, get) => ({
@@ -229,7 +231,22 @@ const useStore = create<RFState>((set, get) => ({
   setIsNeedToFit: (isNeedToFit: boolean) => {
     set({ isNeedToFit })
   },
-  routeNodeSize: { width: 180, height: 60 }
+  routeNodeSize: { width: 180, height: 60 },
+  setNodeHiddenStatus: (isHidden: boolean, nodeId: string) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.hidden = isHidden
+          node.data = {
+            ...node.data,
+            isHidden: isHidden
+          }
+        }
+
+        return node;
+      }),
+    });
+  }
 }));
 
 export default useStore;

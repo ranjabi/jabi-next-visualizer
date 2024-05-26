@@ -64,4 +64,5 @@ export type NodePayload = {
   isShowComponents: boolean
   componentsViewBounds: Rect | undefined
   isLeaf: boolean
+  isHidden: boolean
 }

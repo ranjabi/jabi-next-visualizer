@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import { NodePayload } from "@/types";
 import type { Node } from "reactflow";
+import { Checkbox } from "./ui/checkbox";
 
 type SidebarProps = {
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit } = useStore(
+  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus } = useStore(
     useShallow(selector),
   );
   const [routeQuery, setRouteQuery] = useState('')
@@ -73,7 +74,7 @@ const Sidebar = (props: SidebarProps) => {
           <p className="font-semibold">View Type:</p>
           {selectedNode ?
             (<ToggleGroup
-            size={'sm'}
+              size={'sm'}
               type="single"
               className={`mt-1 flex gap-x-3 ${!selectedNode.data.isLeaf ? 'justify-start' : ''}`}
               variant={'outline'}
@@ -107,11 +108,22 @@ const Sidebar = (props: SidebarProps) => {
       {/* Available Routes */}
       <div className="border border-gray-300 rounded-md p-4 mt-4 flex-1 overflow-auto">
         <p className="text-center">Available Routes</p>
-        <Input className="mt-4" placeholder="Find route..." onChange={(e) => setRouteQuery(e.target.value)}/>
-        <div className="mt-4 flex flex-col gap-y-3">
+        <Input className="mt-4" placeholder="Find route..." onChange={(e) => setRouteQuery(e.target.value)} />
+        <div className="mt-4 flex flex-col gap-y-2">
           {filteredRoutes.map(node => {
             return (
-              <Button key={node.data.id} variant={'outline'} onClick={() => handleRouteClick(node.data.id)}><p className="text-left w-full">{node.data.label}</p></Button>
+              <div className="flex gap-x-2 items-center border p-2 rounded-md">
+                <Checkbox className="rounded-sm" checked={!node.data.isHidden} onCheckedChange={() => {
+                  if (node.data.isHidden) {
+                    setNodeHiddenStatus(false, node.id)
+                  } else {
+                    setNodeHiddenStatus(true, node.id)
+                  }
+                  setIsLayouted(false)
+                  setIsNeedToFit(true)
+                }} />
+                <p key={node.data.id} className="text-left w-full hover:cursor-pointer" onClick={() => handleRouteClick(node.data.id)}>{node.data.label}</p>
+              </div>
             )
           })}
         </div>
