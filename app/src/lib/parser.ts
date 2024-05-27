@@ -159,8 +159,8 @@ const tidyRoute = (routeNode: RouteNode) => {
 /**
  * Create an array of nodes and edges of route tree
  */
-export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
-  const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload)
+export const setupInitialNodesEdges = (fileUpload: RawFile[], isRecursive: boolean) => {
+  const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload, isRecursive)
   const _routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
   const routeTree = tidyRoute(_routeTree)
   const initialNodes = generateRouteNodes(routeTree)
@@ -172,7 +172,7 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
 /**
  * Add array of nodes and edges of component tree to each route file
  */
-export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
+export const initComponentTreeNodesAndEdges = (testFile: RawFile[], isRecursive: boolean) => {
   let res = testFile.map(file => {
     const parsedResult = parseAst(file.content as string)
     const parsedAst = parsedResult.parsedAst
@@ -191,125 +191,47 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
     return newFileTree
   })
 
-  // // if (isRecursive) {
-  //   res = res.map(resItem => {
-  //     // if (resItem.path.split('/').includes('pages')) {
+  // recursive view
+  res = res.map(resItem => {
+    if (resItem.importedFile.length > 0) {
+      resItem.importedFile.forEach((resItemImportedFile, idx) => {
 
-  //     // console.log('resItem:', resItem.name)
-  //     if (resItem.importedFile.length > 0) {
-  //       // console.log('resItem.importedFile:', resItem.importedFile)
-  //       // untuk setiap import
-  //       resItem.importedFile.forEach((resItemImportedFile, idx) => {
-  //         // if (idx === 0) {
+        const resWithImportedFile = res.find(item => item.name === resItemImportedFile)
 
-  //         const resWithImportedFile = res.find(item => item.name === resItemImportedFile)
-  //         // console.log('resWithImportedFile:', resWithImportedFile)
+        if (resWithImportedFile) {
+          resItem.nodes.forEach((resItemNode) => {
+            if ((resItemNode.data.label + '.tsx') === resItemImportedFile) { // duplicate occur here
+              const extendedNodes = resWithImportedFile.nodes.map(node => {
+                return {
+                  ...node,
+                  data: { label: ' ' + node.data.label, isExt: true },
+                  id: 'ext-' + uuid().slice(0, 6) + '-' + node.id
+                }
+              })
 
-  //         if (resWithImportedFile) {
-  //           resItem.nodes.forEach((resItemNode) => {
-  //             if ((resItemNode.data.label + '.tsx') === resItemImportedFile) { // duplicate occur here
-  //               //   // parent node of imported file
-  //               // console.log('res item nodes before:', resItem.nodes)
-  //               // if (!resItem.path.split('/').includes('pages')) {
-  //               // kalo bukan pages, buat node clone
-  //               const extendedNodes = resWithImportedFile.nodes.map(node => {
-  //                 return {
-  //                   // hidden: true,
-  //                   ...node,
-  //                   data: { label: ' ' + node.data.label },
-  //                   id: 'ext-' + uuid().slice(0, 6) + '-' + node.id
-  //                 }
-  //               })
+              const extendedEdges = resWithImportedFile.edges.map(edge => {
+                return {
+                  id: 'ext-' + uuid().slice(0, 6) + '-' + edge.id,
+                  source: extendedNodes.find(ns => ns.id.includes(edge.source)).id,
+                  target: extendedNodes.find(nt => nt.id.includes(edge.target)).id,
+                  data: { isExt: true }
+                }
+              })
 
-  //               const extendedEdges = resWithImportedFile.edges.map(edge => {
-  //                 return {
-  //                   // hidden: true,
-  //                   id: 'ext-' + uuid().slice(0, 6) + '-' + edge.id,
-  //                   source: extendedNodes.find(ns => ns.id.includes(edge.source)).id,
-  //                   target: extendedNodes.find(nt => nt.id.includes(edge.target)).id,
-  //                   // data: {hidden: true}
-  //                 }
-  //               })
-
-  //               resItem.nodes.push(...extendedNodes)
-  //               resItem.edges.push({
-  //                 // hidden: true,
-  //                 id: 'extended-' + resItemNode.id + '-TO-' + resItemImportedFile,
-  //                 source: resItemNode.id,
-  //                 target: extendedNodes[0].id,
-  //                 // data: {hidden: true}
-  //               })
-  //               resItem.edges.push(...extendedEdges)
-  //               // }
-  //               // else {
-  //               //   // kalo pages, pake node dari components
-  //               //   // if (resWithImportedFile.name)
-  //               //   console.log('resWithImportedFile.name:', resWithImportedFile.name, resItem.nodes.find(e => e.id.endsWith(resWithImportedFile.name.split('.')[0])))
-  //               //   const extendedNodes = resWithImportedFile.nodes.filter(node => {
-  //               //     const sixCharPattern = '[a-zA-Z0-9]{6}';
-  //               //     const regexPattern = `^ext-${sixCharPattern}-${node.id}$`;
-  //               //     const regexObj = new RegExp(regexPattern);
-  //               //     if (resItem.nodes.find(item => regexObj.test(item.id))) {
-  //               //       // console.log('match node')
-  //               //       return false
-  //               //     }
-  //               //     return true
-  //               //   }).map(node => {
-  //               //     const nodeId = 'ext-' + uuid().slice(0, 6) + '-' + node.id
-  //               //     return {
-  //               //       ...node,
-  //               //       // data: {label: 'x' + node.data.label},
-  //               //       id: nodeId
-  //               //     }
-  //               //   })
-
-  //               //   let flag = true
-
-  //               //   const extendedEdges = resWithImportedFile.edges.filter(edge => {
-  //               //     const sixCharPattern = '[a-zA-Z0-9]{6}';
-  //               //     const regexPattern = `^ext-${sixCharPattern}-${edge.id}$`;
-  //               //     const regexObj = new RegExp(regexPattern);
-  //               //     if (resItem.edges.find(item => regexObj.test(item.id))) {
-  //               //       flag = false
-  //               //       // console.log('match edge')
-  //               //       return false
-  //               //     }
-  //               //     return true
-  //               //   }).map(edge => {
-  //               //     const edgeId = 'ext-' + uuid().slice(0, 6) + '-' + edge.id
-
-  //               //     return {
-  //               //       id: edgeId,
-  //               //       source: extendedNodes.find(ns => ns.id.endsWith(edge.source)).id,
-  //               //       target: extendedNodes.find(nt => nt.id.endsWith(edge.target)).id
-  //               //     }
-  //               //   })
-
-  //               //   resItem.nodes.push(...extendedNodes)
-  //               //   console.log('extendedNodes:', extendedNodes)
-  //               //   if (flag) {
-  //               //     resItem.edges.push({
-  //               //       id: 'extended-' + resItemNode.id + '-TO-' + resItemImportedFile,
-  //               //       source: resItemNode.id,
-  //               //       target: extendedNodes[0].id
-  //               //     })
-  //               //   }
-  //               //   resItem.edges.push(...extendedEdges)
-  //               // }
-  //             }
-  //           })
-  //         }
-  //         // }
-  //       })
-  //     }
-  //     // if (resItem.name.includes('index.tsx')) {
-  //     // console.log('node:', resItem.nodes)
-  //     // console.log('edge:', resItem.edges)
-  //     // }
-  //     // }
-  //     return resItem
-  //   })
-  // // }
+              resItem.nodes.push(...extendedNodes)
+              resItem.edges.push({
+                id: 'ext-root-' + resItemNode.id + '-TO-' + resItemImportedFile,
+                source: resItemNode.id,
+                target: extendedNodes[0].id,
+              })
+              resItem.edges.push(...extendedEdges)
+            }
+          })
+        }
+      })
+    }
+    return resItem
+  })
 
   return res
 }
@@ -391,7 +313,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
 
   const rootId = uuid().slice(0, 6) + '-root'
 
-  const root = {
+  const root: RouteNode = {
     id: rootId,
     name: 'root',
     path: '',
@@ -410,11 +332,10 @@ const convertToTree = (fileUploads: FileUpload[]) => {
       },
       componentsViewBounds: undefined,
       isLeaf: false,
-      // isRecursive: false,
-      isHidden: false
-
+      isHidden: false,
+      isRecursive: false
     }
-  } as RouteNode;
+  };
 
   fileUploads.forEach(item => {
     if (!item.path.includes(beginPath)) {
@@ -463,8 +384,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
               isShowComponents: isLeaf(part) ? true : false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
-              // isRecursive: false
-              isHidden: false
+              isHidden: false,
+              isRecursive: false
             },
             children: []
           };

@@ -7,12 +7,13 @@ import { useState } from "react";
 import { NodePayload } from "@/types";
 import type { Node } from "reactflow";
 import { Checkbox } from "./ui/checkbox";
+import { Switch } from "./ui/switch";
 
 type SidebarProps = {
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus, viewType, setViewType } = useStore(
+  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus, viewType, setViewType, recursiveView, setRecursiveView } = useStore(
     useShallow(selector),
   );
   const [routeQuery, setRouteQuery] = useState('')
@@ -49,11 +50,11 @@ const Sidebar = (props: SidebarProps) => {
         <p className="text-center">Global Options</p>
         <div className="mt-4">
           <p className="font-semibold">View Type:</p>
-          <div className="flex gap-x-3 mt-1">
+          <div className="flex gap-x-3 mt-2">
             <ToggleGroup
               size={'sm'}
               type="single"
-              className='mt-1 flex gap-x-3 w-full'
+              className='flex gap-x-3 w-full'
               variant={'outline'}
               value={viewType}
               onValueChange={(value) => {
@@ -65,6 +66,7 @@ const Sidebar = (props: SidebarProps) => {
                   setAllRoute()
 
                 }
+                setRecursiveView(false)
                 setIsLayouted(false)
                 setIsNeedToFit(true)
               }}
@@ -77,6 +79,20 @@ const Sidebar = (props: SidebarProps) => {
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
+          <p className="font-semibold mt-3">Recursive View:</p>
+          <Switch
+          className="mt-1"
+            disabled={viewType === 'route'}
+            checked={recursiveView}
+            onCheckedChange={() => {
+              if (recursiveView) {
+                setRecursiveView(false)
+              } else {
+                setRecursiveView(true)
+              }
+              setIsLayouted(false)
+            }}
+          />
         </div>
       </div>
       {/* Selected Node Options */}

@@ -40,7 +40,8 @@ const ComponentNode = (props: ComponentNodeProps) => {
   };
 
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(props.data.initialNodes);
+  // for the first time, render non recursive view
+  const [nodes, setNodes, onNodesChange] = useNodesState(props.data.initialNodes.filter(e => !e.id.includes('ext')));
   const [edges, setEdges, onEdgesChange] = useEdgesState(props.data.initialEdges);
   const [layouted, setLayouted] = useState(false);
   const bounds = getNodesBounds(nodes);
@@ -57,16 +58,16 @@ const ComponentNode = (props: ComponentNodeProps) => {
     }
   }, [nodes])
 
-  const onLayout = useCallback(
-    (direction: string) => {
-      const layouted = getLayoutedElements(nodes, edges, { direction });
-
-      setNodes([...layouted.nodes]);
-      setEdges([...layouted.edges]);
-
-    },
-    [nodes, edges]
-  );
+  useEffect(() => {
+    if (props.data.isRecursive) {
+      setNodes(props.data.initialNodes)
+      setEdges(props.data.initialEdges)
+    } else {
+      setNodes(props.data.initialNodes.filter(e => !e.id.includes('ext')))
+      setEdges(props.data.initialEdges.filter(e => !e.id.includes('ext')))
+    }
+    setLayouted(false)
+  }, [props.data.isRecursive])
 
   useEffect(() => {
     if (!layouted) {

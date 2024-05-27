@@ -65,6 +65,7 @@ export type NodePayload = {
   componentsViewBounds: Rect | undefined
   isLeaf: boolean
   isHidden: boolean
+  isRecursive: boolean
 }
 
 export type StyledComponents = {
