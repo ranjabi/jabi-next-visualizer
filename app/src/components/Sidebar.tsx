@@ -134,7 +134,7 @@ const Sidebar = (props: SidebarProps) => {
         </div>
         <div className="mt-3">
           <p className="font-semibold">Action:</p>
-          <Button size={'sm'} className='mt-1' onClick={() => handleFocusNode(selectedNode ? selectedNode.data.id : null)}>Focus</Button>
+          <Button disabled={!selectedNode} size={'sm'} className='mt-1' onClick={() => handleFocusNode(selectedNode ? selectedNode.data.id : null)}>Focus</Button>
         </div>
       </div>
       {/* Available Routes */}
