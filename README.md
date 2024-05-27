@@ -16,12 +16,13 @@ npx jabi-next-visualizer server
 ```
 
 ## Deployment:
-After developing package:
+After developing package:  
 1. Build the TypeScript file  
 ```
 npm run tsc
-```  
-It will create new folder named `cli-build`.
+```
+It will create new folder named `cli-build`.  
+
 2. Build visualizer app  
 ```
 cd app && npm run build
