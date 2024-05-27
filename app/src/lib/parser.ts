@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { uuid } from "./helper";
-import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode } from "@/types";
+import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode, StyledComponents } from "@/types";
 import {
   type Node as FlowNode,
   type Edge as FlowEdge
@@ -45,9 +45,12 @@ export const parseAst = (fileContent: string) => {
     (astNode) => astNode.type === 'ExportDefaultDeclaration',
   )
 
+  // export default function App
   if (ExportDefaultDeclaration?.declaration.type === 'FunctionDeclaration') {
     initialJsxElement = ExportDefaultDeclaration.declaration
-  } else if (ExportDefaultDeclaration?.declaration.type === 'Identifier') {
+  }
+  // export default App
+  else if (ExportDefaultDeclaration?.declaration.type === 'Identifier') {
     const declarationName = ExportDefaultDeclaration.declaration.name
     const FunctionDeclaration = rawAst.program.body.find(
       (astNode) => astNode.type === 'FunctionDeclaration' && astNode.id.name === declarationName,
@@ -55,7 +58,9 @@ export const parseAst = (fileContent: string) => {
 
     if (FunctionDeclaration) {
       initialJsxElement = FunctionDeclaration
-    } else {
+    }
+    // const App = () => {}
+    else {
       const VariableDeclaration = rawAst.program.body.find((astNode) => astNode.type === 'VariableDeclaration' && astNode.declarations.find(dec => dec.id.name === declarationName))
       const AppDeclaration = VariableDeclaration?.declarations.find(dec => dec.id.name === declarationName)
       initialJsxElement = AppDeclaration.init
@@ -64,26 +69,54 @@ export const parseAst = (fileContent: string) => {
 
   let jsxElement
 
+  // { return <element/> }
   if (initialJsxElement.body.type === 'BlockStatement') {
     jsxElement = initialJsxElement.body.body.find(n => n.type === 'ReturnStatement').argument
-  } else if (initialJsxElement.body.type === 'JSXElement') {
+  }
+  // () => <element/>
+  else if (initialJsxElement.body.type === 'JSXElement') {
     jsxElement = initialJsxElement.body
   }
 
-  const parsedAst = parseNode([], jsxElement) as Ast[]
+  let styledComponents: StyledComponents = {}
+
+  // styled components
+  if (rawAst.program.body.find(e => 'specifiers' in e && e.specifiers.find(s => s.local.name === 'styled'))) {
+    const styledDeclarations = rawAst.program.body.filter(e => e.type === 'VariableDeclaration' && e.declarations[0].init.tag.object.name === 'styled')
+    styledDeclarations.forEach(declaration => {
+      const htmlTag = declaration.declarations[0].init.tag.property.name
+      const declarationName = declaration.declarations[0].id.name
+      styledComponents[declarationName] = htmlTag
+    })
+  }
+
+  const parsedAst = parseNode([], jsxElement, styledComponents) as Ast[]
 
   return { parsedAst: parsedAst[0], importedFile: importedFile }
 }
 
 // @ts-ignore
-const parseNode = (oldNode, currentNode) => {
+const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => {
   let element = {};
   if (currentNode.type === 'JSXElement') {
+    const tagName = currentNode.openingElement.name.name
     element = {
-      id: uuid().slice(0, 8) + '-' + currentNode.openingElement.name.name,
-      name: currentNode.openingElement.name.name,
+      id: uuid().slice(0, 8) + '-' + tagName,
+      name: tagName,
       children: [],
     };
+
+    
+    if (styledComponents) {
+      if (tagName in styledComponents) {
+        element.children.push({
+          id: uuid().slice(0, 8) + '-' + styledComponents[tagName],
+          name: styledComponents[tagName],
+          children: [],
+        })
+      }
+    }
+
     oldNode.push(element);
   } else if (currentNode.type === 'JSXFragment') {
     element = {
@@ -100,9 +133,9 @@ const parseNode = (oldNode, currentNode) => {
       (node) => {
         if (oldNode.length > 0) {
           // @ts-ignore
-          parseNode(element.children, node)
+          parseNode(element.children, node, styledComponents)
         } else {
-          parseNode(oldNode, node)
+          parseNode(oldNode, node, styledComponents)
         }
       }
     );
@@ -154,7 +187,7 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
       edges: edges,
       importedFile: parsedResult.importedFile
     }
-    
+
     return newFileTree
   })
 
@@ -340,10 +373,10 @@ function generateComponentEdges(ast: Ast) {
 function getParentDirectory(path: string) {
   // Find the last occurrence of '/' in the string
   const lastSlashIndex = path.lastIndexOf('/');
-  
+
   // Extract the substring from the start to the last occurrence of '/'
   const parentDirectory = path.substring(0, lastSlashIndex);
-  
+
   return parentDirectory;
 }
 
@@ -435,7 +468,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
             },
             children: []
           };
-          
+
           currentNode.children.push(foundChild);
         }
 

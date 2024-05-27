@@ -66,3 +66,7 @@ export type NodePayload = {
   isLeaf: boolean
   isHidden: boolean
 }
+
+export type StyledComponents = {
+  [declarationName: string]: string
+}
