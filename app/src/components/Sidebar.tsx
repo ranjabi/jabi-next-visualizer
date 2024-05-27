@@ -198,7 +198,6 @@ const Sidebar = (props: SidebarProps) => {
                     setNodeHiddenStatus(true, node.id)
                   }
                   setIsLayouted(false)
-                  setIsNeedToFit(true)
                 }} />
                 <p className="text-left w-full hover:cursor-pointer" onClick={() => handleRouteClick(node.data.id)}>{node.data.label}</p>
               </div>
