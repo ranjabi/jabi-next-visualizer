@@ -44,7 +44,8 @@ export type RFState = {
   setNodeHiddenStatus: (isHidden: boolean, nodeId: string) => void
   setAllComponentsNodeRecursiveStatus: (isRecursive: boolean) => void
   recursiveView: boolean
-  setRecursiveView: (isRecursive: boolean) => void
+  setAllRecursiveView: (isRecursive: boolean) => void
+  setRecursiveView: (nodeId: string, isRecursive: boolean) => void
 };
 
 export const selector = (state: RFState) => ({
@@ -74,6 +75,7 @@ export const selector = (state: RFState) => ({
   setNodeHiddenStatus: state.setNodeHiddenStatus,
   setAllComponentsNodeRecursiveStatus: state.setAllComponentsNodeRecursiveStatus,
   recursiveView: state.recursiveView,
+  setAllRecursiveView: state.setAllRecursiveView,
   setRecursiveView: state.setRecursiveView
 });
 
@@ -267,13 +269,27 @@ const useStore = create<RFState>((set, get) => ({
     });
   },
   recursiveView: false,
-  setRecursiveView: (isRecursive: boolean) => {
+  setAllRecursiveView: (isRecursive: boolean) => {
     set({ recursiveView: isRecursive })
     set({
       nodes: get().nodes.map((node) => {
         node.data = {
           ...node.data,
           isRecursive: isRecursive
+        }
+
+        return node;
+      }),
+    });
+  },
+  setRecursiveView: (nodeId: string, isRecursive: boolean) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          node.data = {
+            ...node.data,
+            isRecursive: isRecursive
+          }
         }
 
         return node;

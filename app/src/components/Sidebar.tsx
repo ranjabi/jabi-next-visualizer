@@ -13,7 +13,7 @@ type SidebarProps = {
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus, viewType, setViewType, recursiveView, setRecursiveView } = useStore(
+  const { selectedNode, setNodeViewToComponents, setNodeViewToRoute, setSelectedNode, setIsLayouted, isLayouted, setAllRoute, setAllComponents, setFocusId, nodes, setSelectedNodeId, setIsNeedToFit, setNodeHiddenStatus, viewType, setViewType, recursiveView, setAllRecursiveView, setRecursiveView } = useStore(
     useShallow(selector),
   );
   const [routeQuery, setRouteQuery] = useState('')
@@ -79,16 +79,18 @@ const Sidebar = (props: SidebarProps) => {
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
-          <p className="font-semibold mt-3">Recursive View:</p>
+        </div>
+        <div className="mt-3">
+          <p className="font-semibold">Recursive View:</p>
           <Switch
-          className="mt-1"
+            className="mt-1"
             disabled={viewType === 'route'}
             checked={recursiveView}
             onCheckedChange={() => {
               if (recursiveView) {
-                setRecursiveView(false)
+                setAllRecursiveView(false)
               } else {
-                setRecursiveView(true)
+                setAllRecursiveView(true)
               }
               setIsLayouted(false)
             }}
@@ -131,6 +133,25 @@ const Sidebar = (props: SidebarProps) => {
             </ToggleGroup>)
             :
             (<p>None</p>)}
+        </div>
+        <div>
+          <p className="font-semibold mt-3">Recursive View:</p>
+          <Switch
+            className="mt-1"
+            disabled={viewType === 'route' || !selectedNode}
+            checked={selectedNode?.data.isRecursive}
+            onCheckedChange={() => {
+              if (selectedNode) {
+                if (selectedNode.data.isRecursive) {
+                  setRecursiveView(selectedNode?.id, false)
+                } else {
+                  setRecursiveView(selectedNode?.id, true)
+                }
+                setSelectedNode(selectedNode.id)
+                setIsLayouted(false)
+              }
+            }}
+          />
         </div>
         <div className="mt-3">
           <p className="font-semibold">Action:</p>

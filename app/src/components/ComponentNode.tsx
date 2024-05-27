@@ -18,9 +18,10 @@ type ComponentNodeProps = {
 const additionalHeight = 32
 
 const ComponentNode = (props: ComponentNodeProps) => {
-  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+  
 
   const getLayoutedElements = (nodes: FlowNode[], edges: FlowEdge[], options: { direction: string }) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
     g.setGraph({ rankdir: options.direction });
 
     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
