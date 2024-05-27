@@ -110,7 +110,7 @@ const useStore = create<RFState>((set, get) => ({
   // setIsLayouted: (fn: (prev: boolean) => boolean) => {
   //   set((state => ({ isLayouted: fn(state.isLayouted) })));
   // },
-  viewType: 'component',
+  viewType: 'route',
   setViewType: (viewType: string) => {
     set({ viewType })
   },
@@ -246,11 +246,15 @@ const useStore = create<RFState>((set, get) => ({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
           node.hidden = isHidden
+          
           node.data = {
             ...node.data,
-            isHidden: isHidden
+            isHidden: isHidden,
+            componentsViewBounds: undefined
           }
         }
+        node.width = 2
+        node.height = 2
 
         return node;
       }),

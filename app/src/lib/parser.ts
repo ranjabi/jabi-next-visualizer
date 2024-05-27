@@ -7,7 +7,6 @@ import {
   type Edge as FlowEdge
 } from 'reactflow';
 import { parse } from "@babel/parser";
-import RouteNode from "@/components/RouteNode";
 const leafColor = '#ff0072'
 
 /**
@@ -160,7 +159,7 @@ const tidyRoute = (routeNode: RouteNode) => {
  * Create an array of nodes and edges of route tree
  */
 export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
-  const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload, isRecursive)
+  const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload)
   const _routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
   const routeTree = tidyRoute(_routeTree)
   const initialNodes = generateRouteNodes(routeTree)
@@ -382,7 +381,7 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: 'white'
               },
-              isShowComponents: isLeaf(part) ? true : false,
+              isShowComponents: false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
               isHidden: false,

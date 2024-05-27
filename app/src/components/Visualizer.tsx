@@ -48,6 +48,9 @@ function Visualizer(props: VisualizeProps) {
           }
           return node
         } else {
+          if (node.data.isHidden) {
+            return { ...node, width: 2 , height: 2 }
+          }
           return { ...node, width: routeNodeSize.width , height: routeNodeSize.height }
         }
       }
@@ -88,7 +91,7 @@ function Visualizer(props: VisualizeProps) {
       if (
         nodes
         .filter(
-          n => n.data.isShowComponents && n.data.isLeaf
+          n => n.data.isShowComponents && n.data.isLeaf && !n.data.isHidden
         )
         .every(
           n => n.data.componentsViewBounds
