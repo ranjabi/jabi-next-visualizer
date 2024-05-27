@@ -159,7 +159,7 @@ const tidyRoute = (routeNode: RouteNode) => {
 /**
  * Create an array of nodes and edges of route tree
  */
-export const setupInitialNodesEdges = (fileUpload: RawFile[], isRecursive: boolean) => {
+export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
   const fileUploadWithComponentTreeNodesAndEdges = initComponentTreeNodesAndEdges(fileUpload, isRecursive)
   const _routeTree = convertToTree(fileUploadWithComponentTreeNodesAndEdges)
   const routeTree = tidyRoute(_routeTree)
@@ -172,7 +172,7 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[], isRecursive: boole
 /**
  * Add array of nodes and edges of component tree to each route file
  */
-export const initComponentTreeNodesAndEdges = (testFile: RawFile[], isRecursive: boolean) => {
+export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   let res = testFile.map(file => {
     const parsedResult = parseAst(file.content as string)
     const parsedAst = parsedResult.parsedAst

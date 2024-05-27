@@ -88,7 +88,7 @@ const Sidebar = (props: SidebarProps) => {
                   setAllRoute()
 
                 }
-                setRecursiveView(false)
+                setAllRecursiveView(false)
                 setIsLayouted(false)
                 setIsNeedToFit(true)
               }}
