@@ -66,6 +66,7 @@ export type NodePayload = {
   isLeaf: boolean
   isHidden: boolean
   isRecursive: boolean
+  path: string
 }
 
 export type StyledComponents = {

@@ -333,7 +333,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
       componentsViewBounds: undefined,
       isLeaf: false,
       isHidden: false,
-      isRecursive: false
+      isRecursive: false,
+      path: ''
     }
   };
 
@@ -385,7 +386,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
               isHidden: false,
-              isRecursive: false
+              isRecursive: false,
+              path: beginPath + '/' + pathParts.slice(0, index + 1).join('/')
             },
             children: []
           };

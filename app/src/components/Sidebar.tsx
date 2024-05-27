@@ -3,11 +3,12 @@ import { useShallow } from "zustand/react/shallow";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NodePayload } from "@/types";
 import type { Node } from "reactflow";
 import { Checkbox } from "./ui/checkbox";
 import { Switch } from "./ui/switch";
+import { useRouter } from "next/router";
 
 type SidebarProps = {
 }
@@ -24,6 +25,8 @@ const Sidebar = (props: SidebarProps) => {
 
     return routes.filter((route => route.data.label.includes(query)))
   }
+  const router = useRouter()
+  const [userProjectPath, setUserProjectPath] = useState('')
 
   const filteredRoutes = getFilteredRoutes(routeQuery, nodes.filter(n => n.data.isLeaf))
 
@@ -42,6 +45,25 @@ const Sidebar = (props: SidebarProps) => {
     handleFocusNode(nodeId)
     setSelectedNodeId(nodeId)
   }
+
+  useEffect(() => {
+    let ignore = false;
+
+    const getUserProjectPath = async () => {
+      const res = await fetch('http://localhost:3010/user-project-path')
+      const userProjectRes = await res.json()
+
+      if (!ignore) {
+        setUserProjectPath(userProjectRes.path)
+      }
+    }
+
+    getUserProjectPath()
+
+    return () => {
+      ignore = true;
+    };
+  }, [])
 
   return (
     <div className='flex flex-col h-[100vh]  min-w-[300px] max-w-[300px] bg-white p-4'>
@@ -155,7 +177,10 @@ const Sidebar = (props: SidebarProps) => {
         </div>
         <div className="mt-3">
           <p className="font-semibold">Action:</p>
-          <Button disabled={!selectedNode} size={'sm'} className='mt-1' onClick={() => handleFocusNode(selectedNode ? selectedNode.data.id : null)}>Focus</Button>
+          <div className="flex gap-x-2 mt-1">
+          <Button disabled={!selectedNode} size={'sm'} onClick={() => handleFocusNode(selectedNode ? selectedNode.data.id : null)}>Focus</Button>
+          <Button disabled={!selectedNode} size={'sm'} onClick={() => router.push(`vscode://file${userProjectPath}/${selectedNode?.data.path}`)}>Open in VSCode</Button>
+          </div>
         </div>
       </div>
       {/* Available Routes */}

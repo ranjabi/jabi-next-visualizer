@@ -13,6 +13,10 @@ app.get('/raw-file', (_req, res) => {
   res.status(200).send(fs.readFileSync(config.rawFileOutputPath))
 })
 
+app.get('/user-project-path', (_req, res) => {
+  res.status(200).send({path: config.userProjectPath})
+})
+
 app.get('/', (_req, res) => {
   res.sendFile(config.appIndexPath);
 })

@@ -12,6 +12,7 @@ import process from 'process';
 // }
 
 export const config = {
+  userProjectPath: process.cwd(),
   rawFileOutputPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/.visualizer/data.json',
   appPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/out',
   appIndexPath: process.cwd() + '/node_modules/jabi-next-visualizer/app/out/index.html',
