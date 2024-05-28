@@ -296,6 +296,8 @@ const useStore = create<RFState>((set, get) => ({
             isRecursive: isRecursive,
             componentsViewBounds: undefined
           }
+          node.width = 2
+          node.height = 2
         }
 
         return node;

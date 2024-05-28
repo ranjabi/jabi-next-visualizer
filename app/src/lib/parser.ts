@@ -109,7 +109,7 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
     if (styledComponents) {
       if (tagName in styledComponents) {
         element.children.push({
-          id: uuid().slice(0, 8) + '-' + styledComponents[tagName],
+          id: 'ext-styled-' + uuid().slice(0, 6) + '-' + styledComponents[tagName],
           name: styledComponents[tagName],
           children: [],
         })
