@@ -1,6 +1,6 @@
 {
   "name": "jabi-next-visualizer",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Visualizer for Next.js routes and components",
   "main": "index.js",
   "scripts": {

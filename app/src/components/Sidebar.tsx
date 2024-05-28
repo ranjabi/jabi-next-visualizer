@@ -160,7 +160,7 @@ const Sidebar = (props: SidebarProps) => {
           <p className="font-semibold mt-3">Recursive View:</p>
           <Switch
             className="mt-1"
-            disabled={viewType === 'route' || !selectedNode}
+            disabled={!selectedNode?.data.isShowComponents || !selectedNode}
             checked={selectedNode?.data.isRecursive}
             onCheckedChange={() => {
               if (selectedNode) {

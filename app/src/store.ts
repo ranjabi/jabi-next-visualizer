@@ -279,7 +279,8 @@ const useStore = create<RFState>((set, get) => ({
       nodes: get().nodes.map((node) => {
         node.data = {
           ...node.data,
-          isRecursive: isRecursive
+          isRecursive: isRecursive,
+          componentsViewBounds: undefined
         }
 
         return node;
@@ -292,7 +293,8 @@ const useStore = create<RFState>((set, get) => ({
         if (node.id === nodeId) {
           node.data = {
             ...node.data,
-            isRecursive: isRecursive
+            isRecursive: isRecursive,
+            componentsViewBounds: undefined
           }
         }
 

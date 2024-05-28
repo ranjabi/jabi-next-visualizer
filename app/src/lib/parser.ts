@@ -194,9 +194,7 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   res = res.map(resItem => {
     if (resItem.importedFile.length > 0) {
       resItem.importedFile.forEach((resItemImportedFile, idx) => {
-
-        const resWithImportedFile = res.find(item => item.name === resItemImportedFile)
-
+        const resWithImportedFile = res.find(item => item.name === 'index.tsx' ? item.path.split('/')[item.path.split('/').length - 2] + '.tsx' === resItemImportedFile : item.name === resItemImportedFile)
         if (resWithImportedFile) {
           resItem.nodes.forEach((resItemNode) => {
             if ((resItemNode.data.label + '.tsx') === resItemImportedFile) { // duplicate occur here
