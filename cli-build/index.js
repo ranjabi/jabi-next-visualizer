@@ -41,6 +41,7 @@ program.command('parse')
         });
     }
     var currentPath = process_1.default.cwd();
+    console.log('Start parsing from: ', currentPath);
     var dirRes = [];
     rec_file(currentPath, '', dirRes);
     console.log('Starting to write the result to data.json');
@@ -60,10 +61,12 @@ program.command('parse')
 //     console.log("Curent dir from project directory:", process.cwd());
 //   });
 program.command('config')
+    .description('Show user config')
     .action(function () {
     console.log('Config:', config_1.config);
 });
 program.command('server')
+    .description('Run visualizer website')
     .action(function () {
     execSync("node ".concat(config_1.config.serverPath), { stdio: 'inherit' });
 });

@@ -14,6 +14,7 @@ var process_1 = __importDefault(require("process"));
 //   return config
 // }
 exports.config = {
+    userProjectPath: process_1.default.cwd(),
     rawFileOutputPath: process_1.default.cwd() + '/node_modules/jabi-next-visualizer/app/.visualizer/data.json',
     appPath: process_1.default.cwd() + '/node_modules/jabi-next-visualizer/app/out',
     appIndexPath: process_1.default.cwd() + '/node_modules/jabi-next-visualizer/app/out/index.html',
