@@ -66,11 +66,13 @@ program.command('parse')
 //   });
 
 program.command('config')
+  .description('Show user config')
   .action(() => {
     console.log('Config:', config);
   });
 
 program.command('server')
+  .description('Run visualizer website')
   .action (() => {
     execSync(`node ${config.serverPath}`, {stdio: 'inherit'})
   })
