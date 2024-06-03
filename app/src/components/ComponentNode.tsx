@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import ReactFlow, { Handle, Panel, Position, ReactFlowProvider, getNodesBounds, useEdgesState, useNodesState, useReactFlow, type Rect, type Node as FlowNode, type Edge as FlowEdge } from 'reactflow';
+import { useEffect, useMemo, useState } from 'react';
+import ReactFlow, { Handle, Position, ReactFlowProvider, getNodesBounds, useEdgesState, useNodesState, useReactFlow, type Rect, type Node as FlowNode, type Edge as FlowEdge } from 'reactflow';
 import Dagre from '@dagrejs/dagre';
 import 'reactflow/dist/style.css';
 import { NodePayload } from '@/types';
 import useStore from '@/store';
+import InnerComponentNode from './InnerComponentNode';
 
 const rfStyle = {
   backgroundColor: '#B8CEFF',
@@ -18,8 +19,6 @@ type ComponentNodeProps = {
 const additionalHeight = 32
 
 const ComponentNode = (props: ComponentNodeProps) => {
-  
-
   const getLayoutedElements = (nodes: FlowNode[], edges: FlowEdge[], options: { direction: string }) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
     g.setGraph({ rankdir: options.direction });
@@ -91,6 +90,8 @@ const ComponentNode = (props: ComponentNodeProps) => {
 
   }, [nodes, edges])
 
+  const nodeTypes = useMemo(() => ({ InnerComponentNode: InnerComponentNode }), []);
+
   return (
     <>
       <div className={`bg-white rounded-t pl-2 h-[${additionalHeight}px] flex items-center`}>
@@ -99,6 +100,7 @@ const ComponentNode = (props: ComponentNodeProps) => {
       <ReactFlowProvider>
         <div style={{ height: props.bounds.height + (2 * props.bounds.y), width: props.bounds.width + (2 * props.bounds.x) }} className={`absolute top-[${additionalHeight}px]`}>
           <ReactFlow
+            nodeTypes={nodeTypes}
             nodesDraggable={false}
             panOnDrag={false}
             nodes={nodes}

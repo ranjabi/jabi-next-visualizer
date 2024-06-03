@@ -104,11 +104,6 @@ function Visualizer(props: VisualizeProps) {
       }
     }
 
-    return () => {
-      setIsLayouted(false)
-      setIsNeedToFit(true)
-    }
-
   }, [nodes, edges])
 
   useEffect(() => {
