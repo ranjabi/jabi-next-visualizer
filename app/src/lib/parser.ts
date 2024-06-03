@@ -71,6 +71,9 @@ export const parseAst = (fileContent: string) => {
   // { return <element/> }
   if (initialJsxElement.body.type === 'BlockStatement') {
     jsxElement = initialJsxElement.body.body.find(n => n.type === 'ReturnStatement').argument
+    if (!['JSXElement', 'JSXFragment'].includes(jsxElement.type)) {
+      return { parsedAst: null, importedFile: importedFile }
+    }
   }
   // () => <element/>
   else if (initialJsxElement.body.type === 'JSXElement') {
@@ -98,7 +101,10 @@ export const parseAst = (fileContent: string) => {
 const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => {
   let element = {};
   if (currentNode.type === 'JSXElement') {
-    const tagName = currentNode.openingElement.name.name
+    let tagName = currentNode.openingElement.name.name
+    if (!tagName) {
+      tagName = currentNode.openingElement.name.object.name + '.' + currentNode.openingElement.name.property.name
+    }
     element = {
       id: uuid().slice(0, 8) + '-' + tagName,
       name: tagName,
@@ -176,8 +182,14 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
     const parsedResult = parseAst(file.content as string)
     const parsedAst = parsedResult.parsedAst
     
-    const nodes = generateComponentNodes(parsedAst)
-    const edges = generateComponentEdges(parsedAst)
+    let nodes
+    let edges
+
+    if (parsedAst) {
+      nodes = generateComponentNodes(parsedAst)
+      edges = generateComponentEdges(parsedAst)
+    }
+    
     const newFileTree = {
       name: file.name,
       path: file.path,
