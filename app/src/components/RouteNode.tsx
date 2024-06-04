@@ -45,7 +45,7 @@ const RouteNode = (props: RouteNodeProps) => {
       onClick={props.handleClick}
     >
       <Handle type="target" position={Position.Top} />
-      <p className="break-all">{props.data.label}</p>
+      <p className="break-all px-2">{props.data.label}</p>
       <Handle type="source" position={Position.Bottom} />
     </div>
   )
