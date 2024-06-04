@@ -19,19 +19,31 @@ program.command('parse')
     console.log('Starting to parse routes and components');
     var getFileExtension = function (filename) { return filename.split('.').pop(); };
     var allowedExtensions = new Set(['tsx']);
+    var isPagesFolderFound = false;
+    var isUsingNextPackage = false;
     function rec_file(folderPath, prefix, res) {
         var dirs = fs_1.default.readdirSync(folderPath, { withFileTypes: true });
         dirs.forEach(function (dir) {
+            var fullPath = (prefix + '/' + dir.name).substring(1);
+            if (dir.name.endsWith('package.json')) {
+                var content = fs_1.default.readFileSync(fullPath, 'utf8');
+                if (content.includes('"next"')) {
+                    isUsingNextPackage = true;
+                }
+            }
+            if (fullPath === 'pages' || fullPath === 'src/pages') {
+                isPagesFolderFound = true;
+            }
             if (dir.isDirectory() && dir.name !== 'node_modules' && !dir.name.startsWith('.')) {
                 rec_file(path_1.default.join(dir.path, dir.name), prefix + '/' + dir.name, res);
             }
             if (allowedExtensions.has(getFileExtension(dir.name))) {
-                var fullPath = (prefix + '/' + dir.name).substring(1);
+                var fullPath_1 = (prefix + '/' + dir.name).substring(1);
                 try {
                     res.push({
                         name: dir.name,
-                        path: fullPath,
-                        content: fs_1.default.readFileSync(fullPath, 'utf8')
+                        path: fullPath_1,
+                        content: fs_1.default.readFileSync(fullPath_1, 'utf8')
                     });
                 }
                 catch (err) {
@@ -44,10 +56,17 @@ program.command('parse')
     console.log('Start parsing from: ', currentPath);
     var dirRes = [];
     rec_file(currentPath, '', dirRes);
+    if (!isUsingNextPackage) {
+        console.log('Fail to parse: Next.js not found in package');
+        return;
+    }
+    if (!isPagesFolderFound) {
+        console.log('Fail to parse: Pages folder not found');
+        return;
+    }
     console.log('Starting to write the result to data.json');
     console.log('Writing to:', config_1.config.rawFileOutputPath);
     try {
-        // fs.writeFileSync('/Users/ranjabi/Desktop/Coding/jabi-next-visualizer/app/.visualizer/data.json', JSON.stringify(dirRes));
         fs_1.default.writeFileSync(config_1.config.rawFileOutputPath, JSON.stringify(dirRes));
     }
     catch (err) {
@@ -55,11 +74,6 @@ program.command('parse')
     }
     console.log('Parse finished');
 });
-// program.command('curdir')
-//   .description('Curent dir from project directory')
-//   .action(() => {
-//     console.log("Curent dir from project directory:", process.cwd());
-//   });
 program.command('config')
     .description('Show user config')
     .action(function () {
