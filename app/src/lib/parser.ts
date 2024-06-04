@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { uuid } from "./helper";
+import { trimBeginningPath, uuid } from "./helper";
 import type { Ast, Edge, FileUpload, RawFile, Node, RouteNode, StyledComponents } from "@/types";
 import {
   type Node as FlowNode,
@@ -34,6 +34,12 @@ export const parseAst = (fileContent: string) => {
         componentName += '.tsx'
       }
       importedFile.push(componentName)
+    } else if (splitted[0] === '.' || splitted[0] === '..') {
+      let trimmed = trimBeginningPath(splitted)
+      if (!trimmed.includes('.tsx')) {
+        trimmed += '.tsx'
+      }
+      importedFile.push(trimmed)
     }
   })
 
