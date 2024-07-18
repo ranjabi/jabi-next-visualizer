@@ -110,7 +110,8 @@ const useStore = create<RFState>((set, get) => ({
   // setIsLayouted: (fn: (prev: boolean) => boolean) => {
   //   set((state => ({ isLayouted: fn(state.isLayouted) })));
   // },
-  viewType: 'route',
+  viewType: 'component',
+  // viewType: 'route',
   setViewType: (viewType: string) => {
     set({ viewType })
   },

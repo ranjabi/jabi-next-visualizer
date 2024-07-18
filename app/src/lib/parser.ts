@@ -12,7 +12,7 @@ const leafColor = '#ff0072'
 /**
  * convert file content into ast
  */
-export const parseAst = (fileContent: string) => {
+export const parseAst = (fileContent: string, filePath: string) => {
   // TODO: find type of rawAst
   const rawAst = parse(fileContent, {
     sourceType: "module",
@@ -117,7 +117,6 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
       children: [],
     };
 
-    
     if (styledComponents) {
       if (tagName in styledComponents) {
         element.children.push({
@@ -136,6 +135,85 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
       children: [],
     };
     oldNode.push(element);
+  } else if (currentNode.type === 'JSXExpressionContainer') {
+    if (currentNode.expression.type === 'ConditionalExpression') {
+      let consequentNode = currentNode.expression.consequent
+      let consequentComponentTree
+      if (consequentNode.type === 'JSXElement') {
+        
+        let consequentTagName = consequentNode.openingElement.name.name
+
+        consequentComponentTree = {
+          id: uuid().slice(0, 8) + '-' + consequentTagName,
+          name: consequentTagName,
+          children: [],
+        }
+      } else if (consequentNode.type === 'JSXFragment') {
+        consequentComponentTree = {
+          id: uuid().slice(0, 8) + '-' + 'Fragment',
+          name: 'Fragment',
+          children: [],
+        }
+      }
+
+      if (consequentComponentTree) {
+        oldNode.push(consequentComponentTree);
+        if ('children' in consequentNode) {
+          consequentNode.children.forEach(
+            // @ts-ignore
+            (node) => {
+              if (oldNode.length > 0) {
+                // @ts-ignore
+                parseNode(consequentComponentTree.children, node, styledComponents)
+              } else {
+                parseNode(oldNode, node, styledComponents)
+              }
+            }
+          );
+        }
+  
+        
+      }
+
+      let alternateNode = currentNode.expression.alternate
+      let alternateComponentTree
+      if (alternateNode.type === 'JSXElement') {
+        
+        let alternateTagName = alternateNode.openingElement.name.name
+
+        alternateComponentTree = {
+          id: uuid().slice(0, 8) + '-' + alternateTagName,
+          name: alternateTagName,
+          children: [],
+        }
+
+      } else if (alternateNode.type === 'JSXFragment') {
+        alternateComponentTree = {
+          id: uuid().slice(0, 8) + '-' + 'Fragment',
+          name: 'Fragment',
+          children: [],
+        }
+      }
+
+      if (alternateComponentTree) {
+        oldNode.push(alternateComponentTree);
+        if ('children' in alternateNode) {
+          alternateNode.children.forEach(
+            // @ts-ignore
+            (node) => {
+              if (oldNode.length > 0) {
+                // @ts-ignore
+                parseNode(alternateComponentTree.children, node, styledComponents)
+              } else {
+                parseNode(oldNode, node, styledComponents)
+              }
+            }
+          );
+        }
+  
+        
+      }
+    }
   }
 
   if ('children' in currentNode) {
@@ -185,9 +263,9 @@ export const setupInitialNodesEdges = (fileUpload: RawFile[]) => {
  */
 export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
   let res = testFile.map(file => {
-    const parsedResult = parseAst(file.content as string)
+    const parsedResult = parseAst(file.content as string, file.path)
     const parsedAst = parsedResult.parsedAst
-    
+
     let nodes
     let edges
 
@@ -195,7 +273,7 @@ export const initComponentTreeNodesAndEdges = (testFile: RawFile[]) => {
       nodes = generateComponentNodes(parsedAst)
       edges = generateComponentEdges(parsedAst)
     }
-    
+
     const newFileTree = {
       name: file.name,
       path: file.path,
@@ -397,7 +475,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: 'white'
               },
-              isShowComponents: false,
+              isShowComponents: isLeaf(part) ? true : false,
+              // isShowComponents: false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
               isHidden: false,
