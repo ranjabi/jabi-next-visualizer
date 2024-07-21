@@ -42,7 +42,7 @@ const ComponentNode = (props: ComponentNodeProps) => {
   const { fitView } = useReactFlow();
   // for the first time, render non recursive view
   const [nodes, setNodes, onNodesChange] = useNodesState(props.data.initialNodes.filter(e => !e.id.startsWith('ext')));
-  const [edges, setEdges, onEdgesChange] = useEdgesState(props.data.initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(props.data.initialEdges.filter(e => !e.id.startsWith('ext')));
   const [layouted, setLayouted] = useState(false);
   const bounds = getNodesBounds(nodes);
   const setComponentsViewBounds = useStore(state => state.setComponentsViewBounds)
