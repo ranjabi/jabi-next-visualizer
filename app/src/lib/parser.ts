@@ -98,13 +98,13 @@ export const parseAst = (fileContent: string, filePath: string) => {
     })
   }
 
-  const parsedAst = parseNode([], jsxElement, styledComponents) as Ast[]
+  const parsedAst = parseNode([], jsxElement, styledComponents, filePath) as Ast[]
 
   return { parsedAst: parsedAst[0], importedFile: importedFile }
 }
 
 // @ts-ignore
-const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => {
+const parseNode = (oldNode, currentNode, styledComponents: StyledComponents, filePath) => {
   let element = {};
   if (currentNode.type === 'JSXElement') {
     let tagName = currentNode.openingElement.name.name
@@ -135,12 +135,13 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
       children: [],
     };
     oldNode.push(element);
-  } else if (currentNode.type === 'JSXExpressionContainer') {
+  }
+  else if (currentNode.type === 'JSXExpressionContainer') {
     if (currentNode.expression.type === 'ConditionalExpression') {
       let consequentNode = currentNode.expression.consequent
       let consequentComponentTree
       if (consequentNode.type === 'JSXElement') {
-        
+
         let consequentTagName = consequentNode.openingElement.name.name
 
         consequentComponentTree = {
@@ -164,21 +165,19 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
             (node) => {
               if (oldNode.length > 0) {
                 // @ts-ignore
-                parseNode(consequentComponentTree.children, node, styledComponents)
+                parseNode(consequentComponentTree.children, node, styledComponents, filePath)
               } else {
-                parseNode(oldNode, node, styledComponents)
+                parseNode(oldNode, node, styledComponents, filePath)
               }
             }
           );
         }
-  
-        
       }
 
       let alternateNode = currentNode.expression.alternate
       let alternateComponentTree
       if (alternateNode.type === 'JSXElement') {
-        
+
         let alternateTagName = alternateNode.openingElement.name.name
 
         alternateComponentTree = {
@@ -203,15 +202,54 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
             (node) => {
               if (oldNode.length > 0) {
                 // @ts-ignore
-                parseNode(alternateComponentTree.children, node, styledComponents)
+                parseNode(alternateComponentTree.children, node, styledComponents, filePath)
               } else {
-                parseNode(oldNode, node, styledComponents)
+                parseNode(oldNode, node, styledComponents, filePath)
               }
             }
           );
         }
-  
-        
+      }
+    } else if (currentNode.expression.type === 'LogicalExpression' && currentNode.expression.operator === '&&') {
+      if (currentNode.expression.right.type === 'JSXElement') {
+        let tagName = currentNode.expression.right.openingElement.name.name
+        if (!tagName) {
+          tagName = currentNode.expression.right.openingElement.name.object.name + '.' + currentNode.expression.right.openingElement.name.property.name
+        }
+        oldNode.push({
+          id: uuid().slice(0, 8) + '-' + tagName,
+          name: tagName,
+          children: [],
+        });
+      } else if (currentNode.expression.right.type === 'JSXFragment') {
+        oldNode.push({
+          id: uuid().slice(0, 8) + '-' + 'Fragment',
+          name: 'Fragment',
+          children: [],
+        });
+      }
+      
+    } else if (currentNode.expression.type === 'CallExpression') {
+      if (filePath.includes('pages/index.tsx')) {
+      }
+      let arrFunExpr = currentNode.expression.arguments.find(arg => arg.type === 'ArrowFunctionExpression')
+      if (arrFunExpr) {
+        if (arrFunExpr.body.type === 'JSXElement') {
+          let tagName = currentNode.expression.arguments.find(arg => arg.type === 'ArrowFunctionExpression').body.openingElement.name.name
+          oldNode.push({
+            id: uuid().slice(0, 8) + '-' + tagName,
+            name: tagName,
+            children: [],
+          });
+        } else if (arrFunExpr.body.type === 'BlockStatement') {
+          let returnStatement = arrFunExpr.body.body.find(b => b.type === 'ReturnStatement')
+          let tagName = returnStatement.argument.openingElement.name.name
+          oldNode.push({
+            id: uuid().slice(0, 8) + '-' + tagName,
+            name: tagName,
+            children: [],
+          });
+        }
       }
     }
   }
@@ -222,9 +260,9 @@ const parseNode = (oldNode, currentNode, styledComponents: StyledComponents) => 
       (node) => {
         if (oldNode.length > 0) {
           // @ts-ignore
-          parseNode(element.children, node, styledComponents)
+          parseNode(element.children, node, styledComponents, filePath)
         } else {
-          parseNode(oldNode, node, styledComponents)
+          parseNode(oldNode, node, styledComponents, filePath)
         }
       }
     );
