@@ -513,8 +513,8 @@ const convertToTree = (fileUploads: FileUpload[]) => {
                 color: 'black',
                 bgColor: 'white'
               },
-              isShowComponents: isLeaf(part) ? true : false,
-              // isShowComponents: false,
+              // isShowComponents: isLeaf(part) ? true : false,
+              isShowComponents: false,
               componentsViewBounds: undefined,
               isLeaf: isLeaf(part) ? true : false,
               isHidden: false,
