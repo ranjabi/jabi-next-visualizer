@@ -8,11 +8,11 @@ npm install jabi-next-visualizer
 ```
 2. Run parse to parse project's source code  
 ```
-npx jabi-next-visualizer parse
+npx jabi-next-visualizer extract
 ```
 3. Run server for visualizer app preview  
 ```
-npx jabi-next-visualizer server
+npx jabi-next-visualizer visualize
 ```
 
 ## Deployment:

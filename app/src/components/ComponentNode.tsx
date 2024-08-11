@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import ReactFlow, { Handle, Position, ReactFlowProvider, getNodesBounds, useEdgesState, useNodesState, useReactFlow, type Rect, type Node as FlowNode, type Edge as FlowEdge } from 'reactflow';
 import Dagre from '@dagrejs/dagre';

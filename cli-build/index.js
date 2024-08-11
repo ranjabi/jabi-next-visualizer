@@ -13,10 +13,10 @@ var program = new commander_1.Command();
 program
     .name('jabi-next-visualizer')
     .description('Visualizer for Next.js routes and components');
-program.command('parse')
-    .description('Parse routes file in project\'s directory')
+program.command('extract')
+    .description('Extract routes and components files in project\'s directory')
     .action(function () {
-    console.log('Starting to parse routes and components');
+    console.log('Starting to extract routes and components');
     var getFileExtension = function (filename) { return filename.split('.').pop(); };
     var allowedExtensions = new Set(['tsx']);
     var isPagesFolderFound = false;
@@ -79,7 +79,7 @@ program.command('config')
     .action(function () {
     console.log('Config:', config_1.config);
 });
-program.command('server')
+program.command('visualize')
     .description('Run visualizer website')
     .action(function () {
     execSync("node ".concat(config_1.config.serverPath), { stdio: 'inherit' });
