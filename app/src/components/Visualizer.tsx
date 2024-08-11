@@ -103,9 +103,9 @@ function Visualizer(props: VisualizeProps) {
         setIsNeedToFit(false)
       }
     }
-    return () => {
-      setIsLayouted(false)
-    }
+    // return () => {
+    //   setIsLayouted(false)
+    // }
 
   }, [nodes, edges])
 
@@ -126,7 +126,7 @@ function Visualizer(props: VisualizeProps) {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         // fitView
-        minZoom={0.1}
+        minZoom={0.01}
         style={{
           background: '#008080'
         }}

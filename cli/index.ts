@@ -12,10 +12,10 @@ program
   .name('jabi-next-visualizer')
   .description('Visualizer for Next.js routes and components');
 
-program.command('parse')
-  .description('Parse routes file in project\'s directory')
+program.command('extract')
+  .description('Extract routes and components files in project\'s directory')
   .action(() => {
-    console.log('Starting to parse routes and components')
+    console.log('Starting to extract routes and components')
     const getFileExtension = (filename) => filename.split('.').pop()
     const allowedExtensions = new Set(['tsx'])
 
@@ -89,7 +89,7 @@ program.command('config')
     console.log('Config:', config);
   });
 
-program.command('server')
+program.command('visualize')
   .description('Run visualizer website')
   .action (() => {
     execSync(`node ${config.serverPath}`, {stdio: 'inherit'})

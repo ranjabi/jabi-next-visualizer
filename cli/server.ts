@@ -14,7 +14,7 @@ app.get('/raw-file', (_req, res) => {
 })
 
 app.get('/user-project-path', (_req, res) => {
-  res.status(200).send({path: config.userProjectPath})
+  res.status(200).send({ path: config.userProjectPath })
 })
 
 app.get('/', (_req, res) => {
