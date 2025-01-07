@@ -1,7 +1,31 @@
 # Jabi Next Visualizer
+
 Visualizer for Next.js page router showing routes and components in tree hierarchies.
 
-## How to Use On a Project:
+<table>
+  <thead>
+    <tr>
+      <th>Routes View</th>
+      <th>Components View</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <p align="center">
+          <img src="images/thumbnail-route.png" alt="Routes View" />
+        </p>  
+      </td>
+      <td>
+        <p align="center">
+          <img src="images/thumbnail-component.png" style="width: 92%;" alt="Components View" />
+        </p>  
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## How to Use:
 1. Install package  
 ```
 npm install jabi-next-visualizer
