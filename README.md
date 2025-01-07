@@ -30,6 +30,3 @@ cd app && npm run build
 
 ## Development:
 `app` folder contain visualizer app using Next.js page router. `cli` folder contain cli app, server app, and config constants.
-
-## To Do:
-- [ ] Add checking to make sure that parse command already run before running the server.
