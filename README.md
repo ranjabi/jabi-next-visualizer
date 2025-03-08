@@ -25,6 +25,8 @@ Visualizer for Next.js page router showing routes and components in tree hierarc
   </tbody>
 </table>
 
+https://github.com/user-attachments/assets/7a28ea91-2b25-474f-b1f3-29b4d040697a
+
 ## How to Use:
 1. Install package  
 ```
